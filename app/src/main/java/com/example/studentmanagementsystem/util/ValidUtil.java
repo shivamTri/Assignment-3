@@ -1,5 +1,9 @@
 package com.example.studentmanagementsystem.util;
 
+import com.example.studentmanagementsystem.activity.StudentActivity;
+import com.example.studentmanagementsystem.model.StudentDetails;
+
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /*
@@ -7,16 +11,19 @@ import java.util.regex.Pattern;
  */
 
 public final class ValidUtil {
+
+
+
     /*
      * Regex have been used to validate name.
      */
-
     public static boolean validateName(String txt) {
 
         String regx = "[a-zA-Z]+\\.?";
         Pattern pattern = Pattern.compile(regx,Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(txt);
         return matcher.matches();
+
     }
     /*
      *Regex have been used to validate roll number.
@@ -28,7 +35,20 @@ public final class ValidUtil {
         Matcher matcher = pattern.matcher(txt);
         return matcher.matches();
 
+    }
+    public static boolean isCheckValidId(final String roll,ArrayList<StudentDetails> checkStudentArrayList) {
+        for (StudentDetails rollNumber : checkStudentArrayList) {
+            if (rollNumber.getRollNo().equals(roll)) {
+                return true;
+            }
+        }
+        return false;
 
     }
+
+
+
+
+
 
 }

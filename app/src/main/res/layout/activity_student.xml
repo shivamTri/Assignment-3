@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.Student">
+    tools:context=".activity.StudentActivity">
 
     <EditText
         android:id="@+id/name"
@@ -13,8 +12,8 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:background="@drawable/border"
-        android:hint="Enter name"
-        android:textSize="24dp" />
+        android:hint="@string/enter_name"
+        android:textSize="@dimen/textSize" />
 
     <EditText
         android:id="@+id/roll"
@@ -23,9 +22,9 @@
         android:background="@drawable/border"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Enter roll number"
+        android:hint="@string/enter_roll_number"
         android:inputType="number"
-        android:textSize="24dp"
+        android:textSize="@dimen/textSize"
         android:maxLength="8" />
 
     <Button
@@ -33,9 +32,8 @@
         android:layout_width="match_parent"
         android:background="@android:color/holo_green_dark"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_marginTop="50dp"
         android:gravity="center"
-        android:text="Save" />
+        android:text="@string/text_save_button" />
 
 </LinearLayout>

@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * this is adapter class  extending viewholder class.
  */
 public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<StudentDetails> mName;
+    private ArrayList<StudentDetails> mStudentArrrayList;
     private OnItemClickListener mListener;
     public interface OnItemClickListener{
         void onItemCLick(int position);
@@ -25,7 +25,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mListener=listener;
     }
     public StudentAdaptor(final ArrayList<StudentDetails> name){
-        this.mName =name;
+        this.mStudentArrrayList =name;
     }
 
     @NonNull
@@ -44,7 +44,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *onBindViewHolder binds data and set the title on the recycler view.
      */
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        StudentDetails title= mName.get(i);
+        StudentDetails title= mStudentArrrayList.get(i);
         String studentName=title.getName();
         ( (StudentViewHolder) viewHolder).textView.setText(studentName);
     }
@@ -53,8 +53,9 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /*
      * this method counts the size of arrayList and will iterate acccording to the size.
      */
-    public int getItemCount()
-    { return mName.size();}
+    public int getItemCount(){
+        return mStudentArrrayList.size();
+    }
 
 
     class StudentViewHolder extends RecyclerView.ViewHolder {
@@ -63,14 +64,14 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public StudentViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-            textView=(TextView) itemView.findViewById(R.id.text);
+            textView=itemView.findViewById(R.id.text);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(mListener!=null){
-                        int postion=getAdapterPosition();
-                        if(postion!=RecyclerView.NO_POSITION){
-                            mListener.onItemCLick(postion);
+                        int position=getAdapterPosition();
+                        if(position!=RecyclerView.NO_POSITION){
+                            mListener.onItemCLick(position);
                         }
                     }
                 }

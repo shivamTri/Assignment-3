@@ -23,6 +23,8 @@ import android.widget.Toast;
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.comparator.SortByName;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
+import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
+import com.example.studentmanagementsystem.model.BackgroundTask;
 import com.example.studentmanagementsystem.model.StudentDetails;
 import com.example.studentmanagementsystem.comparator.SortByRoll;
 import com.example.studentmanagementsystem.constants.Constants;
@@ -32,36 +34,49 @@ import java.util.Collections;
 
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
+    private RecyclerView student_rv;
     private ArrayList<StudentDetails> studentArrayList=new ArrayList<>();
     private Button mButton;
-    private TextView mtext;
+    private TextView mText;
     private StudentAdaptor mAdapter;
     private String select;
-    private String [] choice={"name","roll no"};
-    private int mPostion;
+    private static final String [] choice={"name","roll no"};
+    private int mPosition;
     private boolean mToggle =true;
+    private int posi;
+    private final static String ALERT_TITLE="Choose Action";
+    private static final String DETAIL_VIEW="View";
+    private static final String DETAIL_EDIT="Edit";
+    private static final String DETAIL_DELETE="Delete";
+    private static final String SORT_BY_ROLL_NUMBER ="roll no";
+    private static final String [] listItems={"View","Edit","Delete"};
+    private  static final String SORTED_BY_ROLL="Sorted by roll number";
+    private  static final String SORTED_BY_NAME="Sorted by name";
+    private static final String SORT_BY_NAME="name";
+    private StudentDataBaseHelper studentDataBaseHelper;
+    private BackgroundTask backgroundTask;
+
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle("Student");
+        setTitle("StudentActivity");
 
+        studentDataBaseHelper=new StudentDataBaseHelper(this);
+        studentArrayList=studentDataBaseHelper.getData();
+        init();
+        if(studentArrayList.size()==0){
+            mText.setText(getString(R.string.no_data));
+        }
 
-
-        recyclerView= findViewById(R.id.studentlist);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter=new StudentAdaptor(studentArrayList);
-
-        recyclerView.setAdapter(mAdapter);
         mAdapter.setOnClickListener(new StudentAdaptor.OnItemClickListener() {
             @Override
             public void onItemCLick(final int position) {
 
-                final String [] listItems={"View","Edit","Delete"};
                 final AlertDialog.Builder alertBuilder=new AlertDialog.Builder(MainActivity.this);
-                alertBuilder.setTitle("Choose action");
+                alertBuilder.setTitle(ALERT_TITLE);
                 alertBuilder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -70,55 +85,56 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,select,Toast.LENGTH_SHORT).show();
 
                         dialog.dismiss();
+                        switch (select){
+                            case DETAIL_VIEW:
+                                Intent viewIntent=new Intent(MainActivity.this, StudentActivity.class);
+                                viewIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
+                                viewIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,DETAIL_VIEW);
+                                startActivity(viewIntent);
+                                break;
 
-                        if(select.equals("View")){
-                            Intent viewIntent=new Intent(MainActivity.this, Student.class);
-                            viewIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
-                            viewIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,"View");
-                            startActivity(viewIntent);
-                        }
-
-                        else if(select.equals("Edit")){
-                            Intent editIntent=new Intent(MainActivity.this,Student.class);
-                            editIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
-                            editIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,"Edit");
-                            /**
-                             * here sendiing the data from this activity to another with the use of putExtra .
-                             */
-                            editIntent.putExtra(Constants.POSITION_STUDENT_DATA,Integer.toString(position));
-                            startActivityForResult(editIntent,2);
-                        }
-
-                        else if(select.equals("Delete")){
-                            AlertDialog.Builder deleteDilog=new AlertDialog.Builder(MainActivity.this);
-                            deleteDilog.setTitle("Do you really want to delete the item..");
-                            deleteDilog.setNeutralButton("cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            });
-
-
-                            deleteDilog.setPositiveButton("Detele", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    studentArrayList.remove(position);
-                                    Toast.makeText(MainActivity.this,"Student deleted",Toast.LENGTH_SHORT).show();
-                                    mAdapter.notifyDataSetChanged();
-                                    if(studentArrayList.size()==0){
-                                        mtext.setVisibility(View.VISIBLE);
+                            case DETAIL_EDIT:
+                                Intent editIntent=new Intent(MainActivity.this, StudentActivity.class);
+                                editIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
+                                editIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,DETAIL_EDIT);
+                                posi=position;
+                                startActivityForResult(editIntent,2);
+                                break;
+                            case DETAIL_DELETE:
+                                AlertDialog.Builder deleteDilog=new AlertDialog.Builder(MainActivity.this);
+                                deleteDilog.setTitle(R.string.delete_confirmation);
+                                deleteDilog.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
                                     }
-                                }
-                            });
+                                });
 
-                            AlertDialog alertDelete=deleteDilog.create();
-                            alertDelete.show();
+
+                                deleteDilog.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                       studentDataBaseHelper.deleteContact(studentArrayList.get(position).getRollNo());
+                                        //backgroundTask.execute("delete_data");
+                                        studentArrayList.remove(position);
+                                       // backgroundTask.execute("delete_data");
+                                        Toast.makeText(MainActivity.this,getString(R.string.dialog_delete),Toast.LENGTH_SHORT).show();
+                                        mAdapter.notifyDataSetChanged();
+                                        if(studentArrayList.size()==0){
+                                            mText.setVisibility(View.VISIBLE);
+                                        }
+                                    }
+                                });
+
+                                AlertDialog alertDelete=deleteDilog.create();
+                                alertDelete.show();
                         }
+
+
 
                     }
 
                 });
-                alertBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                alertBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -134,16 +150,13 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        mtext=findViewById(R.id.nodata);
-        if(studentArrayList.size()==0){
-            mtext.setText(Constants.NO_DATA);
-        }
 
-        mButton =findViewById(R.id.addNext);
+
+
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent nextActivity=new Intent(MainActivity.this,Student.class);
+                Intent nextActivity=new Intent(MainActivity.this, StudentActivity.class);
                 nextActivity.putExtra(Constants.STUDENT_DATA,studentArrayList);
                 nextActivity.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,"Add");
                 startActivityForResult(nextActivity,1);
@@ -165,20 +178,21 @@ public class MainActivity extends AppCompatActivity {
                 int position = 0;
                 StudentDetails studentDetails = (StudentDetails) data.getSerializableExtra(Constants.STUDENT_DATA);
                 studentArrayList.add(position, studentDetails);
+                //backgroundTask.execute("add_data");
+            //  studentDataBaseHelper.addData(studentDetails.getRollNo(),studentDetails.getName());
 
-                if(choice[mPostion].equals("roll no")){
+                if(choice[mPosition].equals(getString(R.string.roll_no))){
 
                     Collections.sort(studentArrayList,new SortByRoll());
                     mAdapter.notifyDataSetChanged();
                 }
-                else if(choice[mPostion].equals("name")){
+                else if(choice[mPosition].equals(getString(R.string.name))){
                     Collections.sort(studentArrayList,(new SortByName()));
                     mAdapter.notifyDataSetChanged();
                 }
-
-                Toast.makeText(this, "student added", Toast.LENGTH_SHORT).show();
-                if (mtext.getVisibility() == View.VISIBLE) {
-                    mtext.setVisibility(View.INVISIBLE);
+                Toast.makeText(this, getString(R.string.toast_student_added), Toast.LENGTH_SHORT).show();
+                if (mText.getVisibility() == View.VISIBLE) {
+                    mText.setVisibility(View.INVISIBLE);
                 }
                 mAdapter.notifyItemInserted(position);
             }
@@ -189,10 +203,14 @@ public class MainActivity extends AppCompatActivity {
                 /**
                  * here taking data from StudentActivity and setting the data name and roll number on the selected position in the list.
                  */
-                Toast.makeText(MainActivity.this,"changed",Toast.LENGTH_LONG).show();
-                int posi = Integer.parseInt(data.getStringExtra(Constants.POSITION_STUDENT_DATA));
+                Toast.makeText(MainActivity.this,getString(R.string.student_changed),Toast.LENGTH_LONG).show();
+                if (data == null) {
+                    throw new AssertionError();
+                }
                 String name=data.getStringExtra(Constants.POSITION_STUDENT_NAME);
                 String id=data.getStringExtra(Constants.POSITION_STUDENT_ROLL);
+               // backgroundTask.execute("update_data");
+                //studentDataBaseHelper.update_name(name,id);
                 StudentDetails std=studentArrayList.get(posi);
                 std.setName(name);
                 std.setId(id);
@@ -212,27 +230,30 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.togglebutton, menu);
         MenuItem mSpinner = menu.findItem(R.id.itemSpinner);
         mSpinner.setActionView(R.layout.spinner);
-        Spinner s = menu.findItem(R.id.itemSpinner).getActionView().findViewById(R.id.spinnerId);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, choice);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        s.setAdapter(adapter);
-        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        Spinner sorting_spinner = menu.findItem(R.id.itemSpinner).getActionView().findViewById(R.id.spinnerId);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, choice);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sorting_spinner.setAdapter(spinnerAdapter);
+        sorting_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    mPosition=position ;
+                    switch (choice[position]) {
+                        case SORT_BY_ROLL_NUMBER:
+                            Toast.makeText(MainActivity.this, SORTED_BY_ROLL, Toast.LENGTH_LONG).show();
+                            Collections.sort(studentArrayList, new SortByRoll());
+                            mAdapter.notifyDataSetChanged();
+                            break;
 
-                mPostion = position;
-                if (choice[position].equals("roll no")) {
-                    Toast.makeText(MainActivity.this, "Sorted by roll", Toast.LENGTH_LONG).show();
-                    Collections.sort(studentArrayList, new SortByRoll());
-                    mAdapter.notifyDataSetChanged();
+                        case SORT_BY_NAME:
+                            Toast.makeText(MainActivity.this, SORT_BY_NAME, Toast.LENGTH_LONG).show();
+                            Collections.sort(studentArrayList, new SortByName());
+                            mAdapter.notifyDataSetChanged();
+                            break;
+                        default:
+                            return;
 
-
-                } else if (choice[position] == "name") {
-                    Toast.makeText(MainActivity.this, "Sorted by name ", Toast.LENGTH_LONG).show();
-
-                    Collections.sort(studentArrayList, new SortByName());
-                    mAdapter.notifyDataSetChanged();
-                }
+                    }
             }
 
             @Override
@@ -252,18 +273,37 @@ public class MainActivity extends AppCompatActivity {
         if(mToggle){
             mToggle =false;
             item.setIcon(R.drawable.ic_grid_on_black_24dp);
-            recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
+            student_rv.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
 
         }
 
         else {
              mToggle =true;
              item.setIcon(R.drawable.ic_grid_off_black_24dp);
-             recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+             student_rv.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         }
         return super.onOptionsItemSelected(item);
     }
+    private void init()
+    {
+
+        mButton =findViewById(R.id.addNext);
+        student_rv = findViewById(R.id.studentlist_tv);
+
+        student_rv.setLayoutManager(new LinearLayoutManager(this));
+        student_rv.setAdapter(mAdapter);
+        mText=findViewById(R.id.nodata);
+        mAdapter=new StudentAdaptor(studentArrayList);
+
+        student_rv.setAdapter(mAdapter);
+
+        backgroundTask= new BackgroundTask(this);
+
+
+
+    }
+
 }
 
 

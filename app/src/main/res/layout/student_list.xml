@@ -8,10 +8,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="shivam"
+        android:text="@string/shivam_tv"
         android:textSize="24dp"
         android:background="@android:color/darker_gray"
-       android:textColor="@android:color/white"
+        android:textColor="@android:color/white"
         android:gravity="center"
         android:padding="10dp"
         android:id="@+id/text"/>

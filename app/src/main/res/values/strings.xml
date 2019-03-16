@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">StudentManagementSystem</string>
+    <string name="text">ADD STUDENT</string>
+    <string name="text_save_button">SAVE</string>
+    <string name="shivam_tv">shivam</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_roll_number">Enter roll number</string>
+    <string name="blank_field">should not be left blank</string>
+    <string name="DETAIL_VIEW">View</string>
+    <string name="dialog_title_update">update by</string>
+    <string name="dialog_title_add">Add By</string>
+    <string name="delete_confirmation">Do you really want to delete the item..</string>
+    <string name="cancel">cancel</string>
+    <string name="roll_no">roll no</string>
+    <string name="name">name</string>
+    <string name="toast_student_added">student added</string>
+    <string name="student_changed">changed</string>
+    <string name="no_data">NO STUDENT ADDED</string>
+    <string name="dialog_delete">deleted</string>
+    <string name="switch_view">View</string>
+    <string name="invalid_name_message">Enter valid name</string>
+    <string name="invalid_rollNo_message">Enter valid roll number</string>
+    <string name="same_rollNo_message">Roll number should be different</string>
 
-        />
+
 </resources>
