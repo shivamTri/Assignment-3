@@ -4,36 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/frag_container"
     tools:context=".activity.StudentActivity">
 
-    <EditText
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@drawable/border"
-        android:hint="@string/enter_name"
-        android:textSize="@dimen/textSize" />
 
-    <EditText
-        android:id="@+id/roll"
-        android:layout_width="match_parent"
-        android:padding="10dp"
-        android:background="@drawable/border"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="@string/enter_roll_number"
-        android:inputType="number"
-        android:textSize="@dimen/textSize"
-        android:maxLength="8" />
-
-    <Button
-        android:id="@+id/addbutton"
-        android:layout_width="match_parent"
-        android:background="@android:color/holo_green_dark"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:gravity="center"
-        android:text="@string/text_save_button" />
 
 </LinearLayout>

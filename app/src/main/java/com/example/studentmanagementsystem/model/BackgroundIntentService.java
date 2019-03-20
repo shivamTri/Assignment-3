@@ -29,9 +29,9 @@ public class BackgroundIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         StudentDataBaseHelper studentDataBaseHelper=new StudentDataBaseHelper(this);
         if(intent.getStringExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY).equals(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD)){
-            studentDataBaseHelper.addData(intent.getStringExtra(Constants.POSITION_STUDENT_ROLL),intent.getStringExtra(Constants.POSITION_STUDENT_NAME));
+            studentDataBaseHelper.addData(intent.getStringExtra(Constants.ROLL_NO),intent.getStringExtra(Constants.FIRST_NAME));
         }else if(intent.getStringExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY).equals(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT)){
-            studentDataBaseHelper.update_name(intent.getStringExtra(Constants.POSITION_STUDENT_NAME),intent.getStringExtra(Constants.POSITION_STUDENT_ROLL));
+            studentDataBaseHelper.update_name(intent.getStringExtra(Constants.FIRST_NAME),intent.getStringExtra(Constants.ROLL_NO));
         }
     }
 }

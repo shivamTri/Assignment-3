@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * this is adapter class  extending viewholder class.
  */
 public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<StudentDetails> mStudentArrrayList;
+    private ArrayList<StudentDetails> mStudentArrayList;
     private OnItemClickListener mListener;
     public interface OnItemClickListener{
         void onItemCLick(int position);
@@ -25,7 +25,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mListener=listener;
     }
     public StudentAdaptor(final ArrayList<StudentDetails> name){
-        this.mStudentArrrayList =name;
+        this.mStudentArrayList =name;
     }
 
     @NonNull
@@ -44,7 +44,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
      *onBindViewHolder binds data and set the title on the recycler view.
      */
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        StudentDetails title= mStudentArrrayList.get(i);
+        StudentDetails title= mStudentArrayList.get(i);
         String studentName=title.getName();
         ( (StudentViewHolder) viewHolder).textView.setText(studentName);
     }
@@ -54,7 +54,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * this method counts the size of arrayList and will iterate acccording to the size.
      */
     public int getItemCount(){
-        return mStudentArrrayList.size();
+        return mStudentArrayList.size();
     }
 
 

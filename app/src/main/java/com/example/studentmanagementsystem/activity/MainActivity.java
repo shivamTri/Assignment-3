@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.studentmanagementsystem.CommunicationFragment;
 import com.example.studentmanagementsystem.R;
+import com.example.studentmanagementsystem.StudentAddUpdateFragment;
+import com.example.studentmanagementsystem.StudentListFragment;
 import com.example.studentmanagementsystem.comparator.SortByName;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
@@ -33,38 +38,71 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CommunicationFragment {
     private RecyclerView student_rv;
-    private ArrayList<StudentDetails> studentArrayList=new ArrayList<>();
+    private ArrayList<StudentDetails> studentArrayList = new ArrayList<>();
     private Button mButton;
     private TextView mText;
     private StudentAdaptor mAdapter;
     private String select;
-    private static final String [] choice={"name","roll no"};
+    private static final String[] choice={"name", "roll no"};
     private int mPosition;
-    private boolean mToggle =true;
+    private boolean mToggle = true;
     private int posi;
-    private final static String ALERT_TITLE="Choose Action";
-    private static final String DETAIL_VIEW="View";
-    private static final String DETAIL_EDIT="Edit";
-    private static final String DETAIL_DELETE="Delete";
-    private static final String SORT_BY_ROLL_NUMBER ="roll no";
-    private static final String [] listItems={"View","Edit","Delete"};
-    private  static final String SORTED_BY_ROLL="Sorted by roll number";
-    private  static final String SORTED_BY_NAME="Sorted by name";
-    private static final String SORT_BY_NAME="name";
+    private static final String DETAIL_VIEW = "View";
+    private static final String DETAIL_EDIT = "Edit";
+    private static final String DETAIL_DELETE = "Delete";
+    private static final String SORT_BY_ROLL_NUMBER = "roll no";
+    private static final String[] listItems = {"View", "Edit", "Delete"};
+    private static final String SORT_BY_NAME = "name";
     private StudentDataBaseHelper studentDataBaseHelper;
-    private BackgroundTask backgroundTask;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
 
 
     @Override
 
-    protected void onCreate(Bundle savedInstanceState)  {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("StudentActivity");
+        // setContentView(R.layout.activity_main);
+        tabLayout = findViewById(R.id.tablayout_id);
+        viewPager = findViewById(R.id.viewpager_id);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(0);
 
-        studentDataBaseHelper=new StudentDataBaseHelper(this);
+
+    }
+
+    public void replaceFrag() {
+        if(viewPager.getCurrentItem()==0) {
+            viewPager.setCurrentItem(1);
+        }else
+            viewPager.setCurrentItem(0);
+    }
+
+
+
+    @Override
+    public void communication(Bundle bundle) {
+        if(viewPager.getCurrentItem()==0) {
+            String tag = "android:switcher:" + R.id.viewpager_id + ":" + 1;
+            StudentAddUpdateFragment studentAddUpdateFragment = (StudentAddUpdateFragment) getSupportFragmentManager().findFragmentByTag(tag);
+            studentAddUpdateFragment.update(bundle);
+        }else if(viewPager.getCurrentItem()==1){
+            String tag = "android:switcher:" + R.id.viewpager_id + ":" + 0;
+            StudentListFragment studentListFragment = (StudentListFragment) getSupportFragmentManager().findFragmentByTag(tag);
+            studentListFragment.update(bundle);
+        }
+        replaceFrag();
+    }
+
+
+       /* studentDataBaseHelper=new StudentDataBaseHelper(this);
         studentArrayList=studentDataBaseHelper.getData();
         init();
         if(studentArrayList.size()==0){
@@ -76,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemCLick(final int position) {
 
                 final AlertDialog.Builder alertBuilder=new AlertDialog.Builder(MainActivity.this);
-                alertBuilder.setTitle(ALERT_TITLE);
+                alertBuilder.setTitle(R.string.alert_title);
                 alertBuilder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -144,9 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog mDialog=alertBuilder.create();
                 mDialog.show();
 
-
             }
-
 
         });
 
@@ -170,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
      * @param resultCode  which result is coming from the StudentActivity
      * @param data intent type data from StudentActivity.
      */
-    @Override
+   /* @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1 ) {
@@ -203,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                 /**
                  * here taking data from StudentActivity and setting the data name and roll number on the selected position in the list.
                  */
-                Toast.makeText(MainActivity.this,getString(R.string.student_changed),Toast.LENGTH_LONG).show();
+               /* Toast.makeText(MainActivity.this,getString(R.string.student_changed),Toast.LENGTH_LONG).show();
                 if (data == null) {
                     throw new AssertionError();
                 }
@@ -225,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
      * @param menu
      * @return
      */
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.togglebutton, menu);
         MenuItem mSpinner = menu.findItem(R.id.itemSpinner);
@@ -240,13 +276,13 @@ public class MainActivity extends AppCompatActivity {
                     mPosition=position ;
                     switch (choice[position]) {
                         case SORT_BY_ROLL_NUMBER:
-                            Toast.makeText(MainActivity.this, SORTED_BY_ROLL, Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, getString(R.string.sorted_by_roll), Toast.LENGTH_LONG).show();
                             Collections.sort(studentArrayList, new SortByRoll());
                             mAdapter.notifyDataSetChanged();
                             break;
 
                         case SORT_BY_NAME:
-                            Toast.makeText(MainActivity.this, SORT_BY_NAME, Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, getString(R.string.sorted_by_name), Toast.LENGTH_LONG).show();
                             Collections.sort(studentArrayList, new SortByName());
                             mAdapter.notifyDataSetChanged();
                             break;
@@ -268,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
      * @param item
      * @return
      */
-    @Override
+   /* @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(mToggle){
             mToggle =false;
@@ -285,30 +321,19 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    private void init()
+   /* private void init()
     {
 
-        mButton =findViewById(R.id.addNext);
-        student_rv = findViewById(R.id.studentlist_tv);
-
+       // mButton =findViewById(R.id.addNext);
+       // student_rv = findViewById(R.id.studentlist_tv);
         student_rv.setLayoutManager(new LinearLayoutManager(this));
-        student_rv.setAdapter(mAdapter);
-        mText=findViewById(R.id.nodata);
+       // student_rv.setAdapter(mAdapter);
+       // mText=findViewById(R.id.nodata);
         mAdapter=new StudentAdaptor(studentArrayList);
-
         student_rv.setAdapter(mAdapter);
-
-        backgroundTask= new BackgroundTask(this);
-
-
+      //  backgroundTask= new BackgroundTask(this);*/
 
     }
-
-}
-
-
-
-
 
 
 

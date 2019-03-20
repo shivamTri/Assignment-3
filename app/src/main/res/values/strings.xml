@@ -10,17 +10,23 @@
     <string name="dialog_title_update">update by</string>
     <string name="dialog_title_add">Add By</string>
     <string name="delete_confirmation">Do you really want to delete the item..</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="roll_no">roll no</string>
     <string name="name">name</string>
     <string name="toast_student_added">student added</string>
     <string name="student_changed">changed</string>
     <string name="no_data">NO STUDENT ADDED</string>
-    <string name="dialog_delete">deleted</string>
+    <string name="dialog_delete">delete</string>
     <string name="switch_view">View</string>
     <string name="invalid_name_message">Enter valid name</string>
     <string name="invalid_rollNo_message">Enter valid roll number</string>
     <string name="same_rollNo_message">Roll number should be different</string>
+    <string name="alert_title">Choose Action</string>
+    <string name="sorted_by_roll">Sorted by roll number</string>
+    <string name="sorted_by_name">Sorted by name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

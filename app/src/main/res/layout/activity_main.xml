@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+    <android.support.design.widget.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/studentlist_tv"
-        android:padding="10dp"
-        xmlns:android="http://schemas.android.com/apk/res/android">
-    </android.support.v7.widget.RecyclerView>
+        android:id="@+id/tablayout_id"
+        android:background="@color/colorPrimary"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@android:color/holo_red_light">
 
+    </android.support.design.widget.TabLayout>
 
-    <TextView
-        android:layout_height="wrap_content"
+    <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
-        android:id="@+id/nodata"
-        android:textAlignment="center"
-        android:textSize="@dimen/textSize"
-        android:layout_centerInParent="true"
-        />
+        android:layout_height="match_parent"
+        android:id="@+id/viewpager_id">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_dark"
-        android:layout_alignParentBottom="true"
-        android:text="@string/text"
-        android:id="@+id/addNext"
-        />
+    </android.support.v4.view.ViewPager>
 
 
-</RelativeLayout>
+</LinearLayout>

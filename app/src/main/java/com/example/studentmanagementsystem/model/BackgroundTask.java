@@ -51,7 +51,7 @@ public class BackgroundTask extends AsyncTask<String,Void,String> {
 
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
                 dataBaseHelper.update_name(full_name,roll_no);
-                return Constants.EDIT_TOAST;
+                return Constants.UPDATE_TOAST;
 
             default:
         }

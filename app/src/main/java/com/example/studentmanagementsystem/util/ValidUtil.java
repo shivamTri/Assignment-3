@@ -36,7 +36,7 @@ public final class ValidUtil {
         return matcher.matches();
 
     }
-    public static boolean isCheckValidId(final String roll,ArrayList<StudentDetails> checkStudentArrayList) {
+    public static boolean isCheckValidId(ArrayList<StudentDetails> checkStudentArrayList,final String roll) {
         for (StudentDetails rollNumber : checkStudentArrayList) {
             if (rollNumber.getRollNo().equals(roll)) {
                 return true;
