@@ -8,12 +8,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +28,15 @@ import android.widget.Toast;
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.activity.StudentActivity;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
+import com.example.studentmanagementsystem.comparator.SortByName;
+import com.example.studentmanagementsystem.comparator.SortByRoll;
 import com.example.studentmanagementsystem.constants.Constants;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
 import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.model.StudentDetails;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class StudentListFragment extends Fragment {
@@ -35,24 +45,24 @@ public class StudentListFragment extends Fragment {
     private Context mContext;
     private static final String SORT_BY_ROLL_NUMBER = "roll no";
     private static final String SORT_BY_NAME = "name";
-    public static final int VIEW=0;
-    public static final int EDIT=1;
-    public static final int DELETE=2;
-    public static final int REQUEST_CODE_ADD=2;
-    public static final int REQUEST_CODE_EDIT=1;
-    public final static String[] itemDialog={"VIEW" , "EDIT" , "DELETE"};
-    private static final String NO_DATA="NO STUDENT ADDED";
-    private ArrayList<StudentDetails> mStudent=new ArrayList<>();
+    public static final int VIEW = 0;
+    public static final int EDIT = 1;
+    public static final int DELETE = 2;
+    public static final int REQUEST_CODE_ADD = 2;
+    public static final int REQUEST_CODE_EDIT = 1;
+    public final static String[] itemDialog = {"VIEW", "EDIT", "DELETE"};
+    private static final String NO_DATA = "NO STUDENT ADDED";
+    private ArrayList<StudentDetails> mStudent = new ArrayList<>();
     private static final String[] choice = {"name", "roll no"};
 
     private Button mButtonAddCuurent;
     private StudentAdaptor mAdapter;
     private TextView mTextView;
     private Intent mIntentForStudentDetailActivity;
-    private int selectItem=-1;
+    private int selectItem = -1;
     private int positionEditStudentData;
     private RecyclerView mRecyclerView;
-    private boolean toogleLayout=false;
+    private boolean toogleLayout = false;
     private StudentDataBaseHelper mStudentDatabaseHelper;
 
     public StudentListFragment() {
@@ -63,14 +73,14 @@ public class StudentListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mStudentDatabaseHelper=new StudentDataBaseHelper(mContext);
-        mStudent=mStudentDatabaseHelper.getData();
+        mStudentDatabaseHelper = new StudentDataBaseHelper(mContext);
+        mStudent = mStudentDatabaseHelper.getData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view= inflater.inflate(R.layout.fragment_student_list, container, false);
+        view = inflater.inflate(R.layout.fragment_student_list, container, false);
 // mStudent=mStudentDatabaseHelper.getData();
 //For initializing values and set up Adapter
         initValues();
@@ -84,9 +94,9 @@ public class StudentListFragment extends Fragment {
             @Override
             public void onClick(View v) {
 // do something when the corky2 is clicked
-                Bundle bundle=new Bundle();
-                bundle.putSerializable(Constants.STUDENT_DATA_List,mStudent);
-                bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Constants.STUDENT_DATA_List, mStudent);
+                bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
                 mCommunicationFragmentInterface.communication(bundle);
             }
         });
@@ -94,12 +104,12 @@ public class StudentListFragment extends Fragment {
     }
 
 
-    private void onClickOfAdapter(final int pos){
+    private void onClickOfAdapter(final int pos) {
 
 // String Array for Alert Dialog Choice
 
 
-        final AlertDialog.Builder mBuilder=new AlertDialog.Builder(mContext);
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
         mBuilder.setTitle(Constants.CHOOSE_ALERT_DIALOG_TITLE);
 
 //setting SingleChoiceItem onClick
@@ -108,20 +118,20 @@ public class StudentListFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
 //set which choice is selected
-                selectItem=which;
+                selectItem = which;
 
                 dialog.dismiss();
 
-                switch (selectItem){
+                switch (selectItem) {
                     case VIEW:
-                        positionEditStudentData=pos;
+                        positionEditStudentData = pos;
                         viewSendAnotherActivity();
                         break;
                     case EDIT:
-                        Bundle bundle=new Bundle();
-                        bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
-                        bundle.putSerializable(Constants.STUDENT_DATA,mStudent.get(pos));
-                        positionEditStudentData=pos;
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
+                        bundle.putSerializable(Constants.STUDENT_DATA, mStudent.get(pos));
+                        positionEditStudentData = pos;
                         mCommunicationFragmentInterface.communication(bundle);
 //set adapter position of item Clicked
                         break;
@@ -140,20 +150,20 @@ public class StudentListFragment extends Fragment {
 
             }
         });
-        AlertDialog mDialog=mBuilder.create();
+        AlertDialog mDialog = mBuilder.create();
         mDialog.show();
     }
 
-    private void initValues(){
+    private void initValues() {
         mTextView = (TextView) view.findViewById(R.id.mTextView);
 
-        mRecyclerView = view. findViewById(R.id.student_rv);
+        mRecyclerView = view.findViewById(R.id.student_rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mButtonAddCuurent=view.findViewById(R.id.stu_add);
+        mButtonAddCuurent = view.findViewById(R.id.stu_add);
 // setting ArrayList to Adapter of RecycleView
         mAdapter = new StudentAdaptor(mStudent);
         mRecyclerView.setAdapter(mAdapter);
-        if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO||mStudent==null) {
+        if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO || mStudent == null) {
             mTextView.setText(NO_DATA);
         }
 
@@ -169,9 +179,9 @@ public class StudentListFragment extends Fragment {
     }
 
 
-    private void deleteDialog(final int pos){
+    private void deleteDialog(final int pos) {
 //setting new Dialog box for asking ok/cencel
-        AlertDialog.Builder builderForAlert=new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builderForAlert = new AlertDialog.Builder(mContext);
         builderForAlert.setTitle(Constants.DELETE_ALERT_DIALOG_TITLE);
         builderForAlert.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -191,13 +201,13 @@ public class StudentListFragment extends Fragment {
                 mAdapter.notifyDataSetChanged();
 
 //condition for checking ArrayList size is 0 if yes then setting back textView to Vissible
-                if(mStudent.size()==Constants.CHECK_ARRAYLIST_SIZE_ZERO && mTextView.getVisibility()==View.GONE||mStudent==null){
+                if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO && mTextView.getVisibility() == View.GONE || mStudent == null) {
                     mTextView.setVisibility(View.VISIBLE);
                 }
-                Toast.makeText(mContext,Constants.DELETE_TOAST,Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, Constants.DELETE_TOAST, Toast.LENGTH_LONG).show();
             }
         });
-        AlertDialog newDialog1=builderForAlert.create();
+        AlertDialog newDialog1 = builderForAlert.create();
         newDialog1.show();
     }
 
@@ -209,11 +219,10 @@ public class StudentListFragment extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext=context;
+        mContext = context;
         if (context instanceof CommunicationFragmentInterface) {
             mCommunicationFragmentInterface = (CommunicationFragmentInterface) context;
         } else {
@@ -226,12 +235,12 @@ public class StudentListFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mCommunicationFragmentInterface =null;
+        mCommunicationFragmentInterface = null;
     }
 
-    public void update(Bundle bundleFrom2Fragment){
+    public void update(Bundle bundleFrom2Fragment) {
 
-        switch(bundleFrom2Fragment.getString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY)){
+        switch (bundleFrom2Fragment.getString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY)) {
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD:
 
 
@@ -247,27 +256,27 @@ public class StudentListFragment extends Fragment {
 //As size of ArrayList>0 setting visibility of back textView to gone
                 if (mTextView.getVisibility() == View.VISIBLE) mTextView.setVisibility(View.GONE);
                 mAdapter.notifyItemInserted(possitionInsertStudent);
-                Toast.makeText(mContext,Constants.ADD_TOAST,Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, Constants.ADD_TOAST, Toast.LENGTH_SHORT).show();
 
                 break;
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
 
-                String fName=bundleFrom2Fragment.getString(Constants.FIRST_NAME);
-                String lName=bundleFrom2Fragment.getString(Constants.LAST_NAME);
+                String fName = bundleFrom2Fragment.getString(Constants.FIRST_NAME);
+                String lName = bundleFrom2Fragment.getString(Constants.LAST_NAME);
 
 //get Object from itemClicked in RecycleView
-                StudentDetails suStudent=mStudent.get(positionEditStudentData);
+                StudentDetails suStudent = mStudent.get(positionEditStudentData);
                 suStudent.setName(fName);
                 mAdapter.notifyItemChanged(positionEditStudentData);
 // mStudentDatabaseHelper.update_name(suStudent.getmId(),fName+" "+lName);
 //mStudentDatabaseHelper.update_name(fName+" "+lName,suStudent.getmId());
-                Toast.makeText(mContext,Constants.UPDATE_TOAST,Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, Constants.UPDATE_TOAST, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
 
-   /* @Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.togglebutton, menu);
@@ -280,7 +289,7 @@ public class StudentListFragment extends Fragment {
         sorting_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               int mPosition=position ;
+                int mPosition = position;
                 switch (choice[position]) {
                     case SORT_BY_ROLL_NUMBER:
                         Toast.makeText(getActivity(), getString(R.string.sorted_by_roll), Toast.LENGTH_LONG).show();
@@ -305,8 +314,7 @@ public class StudentListFragment extends Fragment {
             }
         });
 
-    }*/
-
+    }
 
 
     /**
@@ -316,7 +324,7 @@ public class StudentListFragment extends Fragment {
      * @return
      */
 
-   /* @Override
+   @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
 
@@ -341,13 +349,14 @@ public class StudentListFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }*/
-
-    void viewSendAnotherActivity(){
-        Intent intent=new Intent(mContext,StudentActivity.class);
-        intent.putExtra(Constants.STUDENT_DATA,mStudent.get(positionEditStudentData));
-        intent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_VIEW);
-        mContext.startActivity(intent);
     }
 
+    void viewSendAnotherActivity() {
+        Intent intent = new Intent(mContext, StudentActivity.class);
+        intent.putExtra(Constants.STUDENT_DATA, mStudent.get(positionEditStudentData));
+        intent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_VIEW);
+        mContext.startActivity(intent);
+    }
 }
+
+
