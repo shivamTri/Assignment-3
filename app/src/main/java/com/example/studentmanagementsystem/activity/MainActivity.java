@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationFrag
        // mText=findViewById(R.id.nodata);
         mAdapter=new StudentAdaptor(studentArrayList);
         student_rv.setAdapter(mAdapter);
-      //  backgroundTask= new BackgroundTask(this);*/
+      //  backgroundTask= new BackgroundTaskAsync(this);*/
 
     }
 

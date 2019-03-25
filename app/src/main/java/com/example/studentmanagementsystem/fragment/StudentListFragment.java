@@ -48,8 +48,8 @@ public class StudentListFragment extends Fragment {
     public static final int VIEW = 0;
     public static final int EDIT = 1;
     public static final int DELETE = 2;
-    public static final int REQUEST_CODE_ADD = 2;
-    public static final int REQUEST_CODE_EDIT = 1;
+    //public static final int REQUEST_CODE_ADD = 2;
+   // public static final int REQUEST_CODE_EDIT = 1;
     public final static String[] itemDialog = {"VIEW", "EDIT", "DELETE"};
    // private static final String NO_DATA = "NO STUDENT ADDED";
     private ArrayList<StudentDetails> mStudent = new ArrayList<>();
@@ -61,7 +61,7 @@ public class StudentListFragment extends Fragment {
     private int selectItem = -1;
     private int positionEditStudentData;
     private RecyclerView mRecyclerView;
-    private boolean toogleLayout = false;
+    private boolean toggleLayout = false;
     private StudentDataBaseHelper mStudentDatabaseHelper;
 
     public StudentListFragment() {
@@ -332,13 +332,13 @@ public class StudentListFragment extends Fragment {
 
 //This case used to change Linear Layout to Grid or vice versa of RecycleView
             case R.id.mySwitch:
-                if(!toogleLayout) {
-                    toogleLayout=true;
+                if(!toggleLayout) {
+                    toggleLayout =true;
                     item.setIcon(R.drawable.ic_grid_on_black_24dp);
                     mRecyclerView.setLayoutManager(new GridLayoutManager(mContext,2));
                     Toast.makeText(mContext,Constants.GRID_LAYOUT_RECYCLER_VIEW,Toast.LENGTH_LONG).show();
                 }else {
-                    toogleLayout=false;
+                    toggleLayout =false;
                     item.setIcon(R.drawable.ic_grid_off_black_24dp);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
                     Toast.makeText(mContext,Constants.LINEAR_LAYOUT_RECYCLER_VIEW,Toast.LENGTH_LONG).show();

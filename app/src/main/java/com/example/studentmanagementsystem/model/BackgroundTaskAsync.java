@@ -11,10 +11,10 @@ import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
 /**
  * this is background class for adding and updating data from data base.
  */
-public class BackgroundTask extends AsyncTask<String,Void,String> {
+public class BackgroundTaskAsync extends AsyncTask<String,Void,String> {
     private Context mContext;
 
-    public BackgroundTask(Context mContext) {
+    public BackgroundTaskAsync(Context mContext) {
         this.mContext = mContext;
     }
 
