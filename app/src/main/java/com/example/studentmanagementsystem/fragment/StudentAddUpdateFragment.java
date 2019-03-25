@@ -225,6 +225,10 @@ public class StudentAddUpdateFragment extends Fragment {
         mListener=null;
     }
 
+    /**
+     * this function is being called  in mainActivity for updation by interface method.
+     * @param bundleNew
+     */
     public void update(Bundle bundleNew){
         bundle=bundleNew;
         typeAction=bundle.getString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY);

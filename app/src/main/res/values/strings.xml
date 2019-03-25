@@ -9,7 +9,7 @@
     <string name="DETAIL_VIEW">View</string>
     <string name="dialog_title_update">update by</string>
     <string name="dialog_title_add">Add By</string>
-    <string name="delete_confirmation">Do you really want to delete the item..</string>
+    <string name="delete_confirmation">Do you really want to delete this item..</string>
     <string name="cancel">Cancel</string>
     <string name="roll_no">roll no</string>
     <string name="name">name</string>
@@ -27,9 +27,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="valid_name">valid name</string>
-    <string name="valid_rollNumber">valid roll</string>
-    <string name="same_roll_error">different</string>
+    <string name="valid_name">invalid name</string>
+    <string name="valid_rollNumber">invalid roll number</string>
+    <string name="same_roll_error">try different roll number</string>
 
 
 </resources>

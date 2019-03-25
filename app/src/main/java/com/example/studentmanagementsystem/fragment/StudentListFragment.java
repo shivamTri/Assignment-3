@@ -261,7 +261,6 @@ public class StudentListFragment extends Fragment {
 
                 String fName = bundleFrom2Fragment.getString(Constants.NAME);
 
-//get Object from itemClicked in RecycleView
                 StudentDetails suStudent = mStudent.get(positionEditStudentData);
                 suStudent.setName(fName);
                 mAdapter.notifyItemChanged(positionEditStudentData);
