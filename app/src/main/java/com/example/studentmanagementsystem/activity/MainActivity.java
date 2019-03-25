@@ -21,23 +21,6 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements CommunicationFragmentInterface {
-   /* private RecyclerView student_rv;
-    private ArrayList<StudentDetails> studentArrayList = new ArrayList<>();
-    private Button mButton;
-    private TextView mText;
-    private StudentAdaptor mAdapter;
-    private String select;
-    private static final String[] choice={"name", "roll no"};
-    private int mPosition;
-    private boolean mToggle = true;
-    private int posi;
-    private static final String DETAIL_VIEW = "View";
-    private static final String DETAIL_EDIT = "Edit";
-    private static final String DETAIL_DELETE = "Delete";
-    private static final String SORT_BY_ROLL_NUMBER = "roll no";
-    private static final String[] listItems = {"View", "Edit", "Delete"};
-    private static final String SORT_BY_NAME = "name";
-    //private StudentDataBaseHelper studentDataBaseHelper;*/
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
