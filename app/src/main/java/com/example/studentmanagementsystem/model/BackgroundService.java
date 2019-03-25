@@ -18,9 +18,9 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         StudentDataBaseHelper studentDataBaseHelper=new StudentDataBaseHelper(this);
         if(intent.getStringExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY).equals(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD)){
-            studentDataBaseHelper.addData(intent.getStringExtra(Constants.ROLL_NO),intent.getStringExtra(Constants.FIRST_NAME));
+            studentDataBaseHelper.addData(intent.getStringExtra(Constants.ROLL_NO),intent.getStringExtra(Constants.NAME));
         }else if(intent.getStringExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY).equals(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT)){
-            studentDataBaseHelper.update_name(intent.getStringExtra(Constants.FIRST_NAME),intent.getStringExtra(Constants.ROLL_NO));
+            studentDataBaseHelper.update_name(intent.getStringExtra(Constants.NAME),intent.getStringExtra(Constants.ROLL_NO));
         }
         stopSelf();
 

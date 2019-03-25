@@ -51,14 +51,13 @@ public class StudentListFragment extends Fragment {
     public static final int REQUEST_CODE_ADD = 2;
     public static final int REQUEST_CODE_EDIT = 1;
     public final static String[] itemDialog = {"VIEW", "EDIT", "DELETE"};
-    private static final String NO_DATA = "NO STUDENT ADDED";
+   // private static final String NO_DATA = "NO STUDENT ADDED";
     private ArrayList<StudentDetails> mStudent = new ArrayList<>();
     private static final String[] choice = {"name", "roll no"};
-
     private Button mButtonAddCuurent;
     private StudentAdaptor mAdapter;
     private TextView mTextView;
-    private Intent mIntentForStudentDetailActivity;
+    //private Intent mIntentForStudentDetailActivity;
     private int selectItem = -1;
     private int positionEditStudentData;
     private RecyclerView mRecyclerView;
@@ -81,14 +80,12 @@ public class StudentListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_student_list, container, false);
-// mStudent=mStudentDatabaseHelper.getData();
 //For initializing values and set up Adapter
         initValues();
 //(new BackProcessGetData(mContext,mContext)).execute();
 
 
 //set Onclick on Add btn
-
         setHasOptionsMenu(true);
         mButtonAddCuurent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +152,7 @@ public class StudentListFragment extends Fragment {
     }
 
     private void initValues() {
-        mTextView = (TextView) view.findViewById(R.id.mTextView);
+        mTextView =  view.findViewById(R.id.mTextView);
 
         mRecyclerView = view.findViewById(R.id.student_rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -164,7 +161,7 @@ public class StudentListFragment extends Fragment {
         mAdapter = new StudentAdaptor(mStudent);
         mRecyclerView.setAdapter(mAdapter);
         if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO || mStudent == null) {
-            mTextView.setText(NO_DATA);
+            mTextView.setText(R.string.no_data);
         }
 
 // settting the onclick to Adapter
@@ -182,14 +179,14 @@ public class StudentListFragment extends Fragment {
     private void deleteDialog(final int pos) {
 //setting new Dialog box for asking ok/cencel
         AlertDialog.Builder builderForAlert = new AlertDialog.Builder(mContext);
-        builderForAlert.setTitle(Constants.DELETE_ALERT_DIALOG_TITLE);
+        builderForAlert.setTitle(R.string.delete_confirmation);
         builderForAlert.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
             }
         });
-        builderForAlert.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        builderForAlert.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -245,24 +242,24 @@ public class StudentListFragment extends Fragment {
 
 
 //Add Object in Student ArrayList at possition
-                int possitionInsertStudent = 0;
+                int positionInsertStudent = 0;
 //get data from another Activity
 
                 StudentDetails sudStudent = (StudentDetails) bundleFrom2Fragment.getSerializable(Constants.STUDENT_DATA);
 //mStudentDatabaseHelper.addData(sudStudent.getmId(),sudStudent.getmFirstName()+" "+sudStudent.getmLastName());
-                mStudent.add(possitionInsertStudent, sudStudent);
+                mStudent.add(positionInsertStudent, sudStudent);
 // mStudentDatabaseHelper.addData(sudStudent.getmId(),sudStudent.getmFirstName()+" "+sudStudent.getmLastName());
 
 //As size of ArrayList>0 setting visibility of back textView to gone
                 if (mTextView.getVisibility() == View.VISIBLE) mTextView.setVisibility(View.GONE);
-                mAdapter.notifyItemInserted(possitionInsertStudent);
+                mAdapter.notifyItemInserted(positionInsertStudent);
                 Toast.makeText(mContext, Constants.ADD_TOAST, Toast.LENGTH_SHORT).show();
+
 
                 break;
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
 
-                String fName = bundleFrom2Fragment.getString(Constants.FIRST_NAME);
-                String lName = bundleFrom2Fragment.getString(Constants.LAST_NAME);
+                String fName = bundleFrom2Fragment.getString(Constants.NAME);
 
 //get Object from itemClicked in RecycleView
                 StudentDetails suStudent = mStudent.get(positionEditStudentData);

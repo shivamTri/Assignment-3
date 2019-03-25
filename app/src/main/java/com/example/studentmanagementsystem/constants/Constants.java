@@ -19,11 +19,10 @@ public class Constants  {
     public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT="Edit";
 
     // used for intent purpose to send data from one activity to other
-    public static final String FIRST_NAME="fname";
+    public static final String NAME ="fname";
 
     // used for intent purpose to send data from one activity to other
     public static final String STUDENT_FULL_NAME="Studentname";
-    public static final String LAST_NAME="lname";
 
     // used for intent purpose to send data from one activity to other
     public static final String ROLL_NO="Roll_no";

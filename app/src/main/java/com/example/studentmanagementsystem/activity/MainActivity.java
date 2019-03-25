@@ -14,14 +14,14 @@ import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 import com.example.studentmanagementsystem.fragment.StudentListFragment;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
-import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
+//import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
 import com.example.studentmanagementsystem.model.StudentDetails;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements CommunicationFragmentInterface {
-    private RecyclerView student_rv;
+   /* private RecyclerView student_rv;
     private ArrayList<StudentDetails> studentArrayList = new ArrayList<>();
     private Button mButton;
     private TextView mText;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationFrag
     private static final String SORT_BY_ROLL_NUMBER = "roll no";
     private static final String[] listItems = {"View", "Edit", "Delete"};
     private static final String SORT_BY_NAME = "name";
-    private StudentDataBaseHelper studentDataBaseHelper;
+    //private StudentDataBaseHelper studentDataBaseHelper;*/
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;

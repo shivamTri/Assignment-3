@@ -30,8 +30,8 @@ public class StudentAddUpdateFragment extends Fragment {
     private View view;
     private Context mContext;
 
-    public static final int REQUEST_CODE_ADD=2;
-    public static final int REQUEST_CODE_EDIT=1;
+    public static final int REQUEST_CODE_ADD=1;
+    public static final int REQUEST_CODE_EDIT=0;
     public static final int ASYNC_TASK=0;
     public static final int SERVICE=1;
     public static final int INTENT_SERVICE=2;
@@ -39,7 +39,7 @@ public class StudentAddUpdateFragment extends Fragment {
     private EditText mEditTextFirstName;
     private EditText mEditTextId;
     private Button mButtonAdd;
-    private int selectButtonOperation=2;
+    private int selectButtonOperation=1;
     private String typeAction;
     private Bundle bundle;
     private StudentDetails editStudentDetail;
@@ -128,7 +128,7 @@ public class StudentAddUpdateFragment extends Fragment {
 
             StudentDetails student = new StudentDetails(fName.toUpperCase(),sRollNo);
             bundle.putSerializable(Constants.STUDENT_DATA,student);
-            generateAlertDialog(sRollNo,fName+" ",Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
+            generateAlertDialog(sRollNo,fName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
 
         }
     }
@@ -142,15 +142,15 @@ public class StudentAddUpdateFragment extends Fragment {
 
 // validation for first name check used set error to edit text
         if (!ValidUtil.validateName(fName)) {
-            mEditTextFirstName.setError("valid name");
+            mEditTextFirstName.setError(getString(R.string.invalid_name_message));
             errorHandling = false;
         }
 // validation for last name check used set error to edit text
 
 //check if error is present or not
         if (errorHandling) {
-            bundle.putString(Constants.FIRST_NAME,fName);
-            generateAlertDialog(editStudentDetail.getRollNo(),fName+" ",Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
+            bundle.putString(Constants.NAME,fName);
+            generateAlertDialog(editStudentDetail.getRollNo(),fName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
         }
     }
 
@@ -169,9 +169,9 @@ public class StudentAddUpdateFragment extends Fragment {
 
         final AlertDialog.Builder mBuilder=new AlertDialog.Builder(mContext);
         if(selectButtonOperation==REQUEST_CODE_EDIT)
-            mBuilder.setTitle("update");
+            mBuilder.setTitle(R.string.dialog_title_update);
         else
-            mBuilder.setTitle("add");
+            mBuilder.setTitle(R.string.dialog_title_add);
 
 //setting SingleChoiceItem onClick
         mBuilder.setSingleChoiceItems(ITEM_DAILOG, -1, new DialogInterface.OnClickListener() {
@@ -200,7 +200,7 @@ public class StudentAddUpdateFragment extends Fragment {
 
             }
         });
-        mBuilder.setNeutralButton("cancel", new DialogInterface.OnClickListener() {
+        mBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -243,7 +243,6 @@ public class StudentAddUpdateFragment extends Fragment {
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD:
                 selectButtonOperation=REQUEST_CODE_ADD;
                 studentList=(ArrayList<StudentDetails>) bundle.getSerializable(Constants.STUDENT_DATA_List);
-                mButtonAdd.setText("add");
                 mEditTextId.setEnabled(true);
 
                 break;

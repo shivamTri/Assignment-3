@@ -23,7 +23,7 @@ public class StudentActivity extends AppCompatActivity implements CommunicationF
         FragmentManager fragmentManager=getSupportFragmentManager();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         studentAddUpdateFragment=new StudentAddUpdateFragment();
-        fragmentTransaction.add(R.id.frag_container,studentAddUpdateFragment,"HEloo");
+        fragmentTransaction.add(R.id.frag_container,studentAddUpdateFragment,"");
         fragmentTransaction.commit();
     }
 
