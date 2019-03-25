@@ -1,12 +1,9 @@
-package com.example.studentmanagementsystem;
+package com.example.studentmanagementsystem.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -15,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.studentmanagementsystem.activity.MainActivity;
-import com.example.studentmanagementsystem.activity.StudentActivity;
+import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.constants.Constants;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
 import com.example.studentmanagementsystem.model.BackgroundIntentService;
 import com.example.studentmanagementsystem.model.BackgroundService;
 import com.example.studentmanagementsystem.model.BackgroundTask;
+import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.model.StudentDetails;
 import com.example.studentmanagementsystem.util.ValidUtil;
 
@@ -40,7 +37,6 @@ public class StudentAddUpdateFragment extends Fragment {
     public static final int INTENT_SERVICE=2;
     public final static String[] ITEM_DAILOG={"AsyncTask" , "Service" , "Intent Service"};
     private EditText mEditTextFirstName;
-    private EditText mEditTextLastName;
     private EditText mEditTextId;
     private Button mButtonAdd;
     private int selectButtonOperation=2;
@@ -50,7 +46,7 @@ public class StudentAddUpdateFragment extends Fragment {
     private boolean errorHandling;
     private int select;
     private StudentDataBaseHelper studentDataBaseHelper;
-    private CommunicationFragment mListener;
+    private CommunicationFragmentInterface mListener;
     private ArrayList<StudentDetails> studentList=new ArrayList<>();
 
     public StudentAddUpdateFragment() {
@@ -97,7 +93,7 @@ public class StudentAddUpdateFragment extends Fragment {
     private void initValues(){
         mEditTextFirstName=view.findViewById(R.id.name);
         mEditTextId=view.findViewById(R.id.roll);
-        mButtonAdd=view.findViewById(R.id.add);
+        mButtonAdd=view.findViewById(R.id.addbutton);
     }
 
 
@@ -108,24 +104,23 @@ public class StudentAddUpdateFragment extends Fragment {
     private void addButtonOnClick(){
 
         String fName = mEditTextFirstName.getText().toString().trim();
-        String lName = mEditTextLastName.getText().toString().trim();
         String sRollNo = mEditTextId.getText().toString().trim();
 
 // validation for first name check used set error to edit text
         if (!ValidUtil.validateName(fName)) {
-            mEditTextFirstName.setError("valid name");
+            mEditTextFirstName.setError(getString(R.string.valid_name));
             errorHandling = false;
         }
 // validation for last name check used set error to edit text
 
 // validation for Roll No check used set error to edit text
         if (!ValidUtil.validateRollNumber(sRollNo)) {
-            mEditTextId.setError("valid roll");
+            mEditTextId.setError(getString(R.string.valid_rollNumber));
             errorHandling = false;
         }
 //check duplicte Roll No
         else if (ValidUtil.isCheckValidId(studentList,sRollNo)) {
-            mEditTextId.setError("different");
+            mEditTextId.setError(getString(R.string.same_roll_error));
             errorHandling = false;
         }
 //check if error is present or not
@@ -133,7 +128,7 @@ public class StudentAddUpdateFragment extends Fragment {
 
             StudentDetails student = new StudentDetails(fName.toUpperCase(),sRollNo);
             bundle.putSerializable(Constants.STUDENT_DATA,student);
-            generateAlertDialog(sRollNo,fName+" "+lName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
+            generateAlertDialog(sRollNo,fName+" ",Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
 
         }
     }
@@ -144,7 +139,6 @@ public class StudentAddUpdateFragment extends Fragment {
      */
     private void editButtonOnClick(){
         String fName = mEditTextFirstName.getText().toString().trim();
-        String lName = mEditTextLastName.getText().toString().trim();
 
 // validation for first name check used set error to edit text
         if (!ValidUtil.validateName(fName)) {
@@ -156,17 +150,12 @@ public class StudentAddUpdateFragment extends Fragment {
 //check if error is present or not
         if (errorHandling) {
             bundle.putString(Constants.FIRST_NAME,fName);
-            bundle.putString(Constants.LAST_NAME,lName);
-            generateAlertDialog(editStudentDetail.getRollNo(),fName+" "+lName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
+            generateAlertDialog(editStudentDetail.getRollNo(),fName+" ",Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
         }
     }
 
 
 
-    private void setTextOfEditText(StudentDetails student){
-        mEditTextFirstName.setText(student.getName().toUpperCase());
-        mEditTextId.setText(student.getRollNo().toUpperCase());
-    }
 
     /**
      * This method used to generate Dialog Box having 3 choose for Background thread
@@ -233,8 +222,8 @@ public class StudentAddUpdateFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext=context;
-        if (context instanceof CommunicationFragment) {
-            mListener = (CommunicationFragment) context;
+        if (context instanceof CommunicationFragmentInterface) {
+            mListener = (CommunicationFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -273,7 +262,6 @@ public class StudentAddUpdateFragment extends Fragment {
                 mEditTextId.setText(editStudentDetail.getRollNo().toUpperCase());
                 mEditTextId.setEnabled(false);
                 mEditTextFirstName.setEnabled(false);
-                mEditTextLastName.setEnabled(false);
                 mButtonAdd.setVisibility(View.GONE);
                 break;
         }

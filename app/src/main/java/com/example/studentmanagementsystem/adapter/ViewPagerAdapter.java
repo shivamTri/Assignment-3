@@ -1,12 +1,12 @@
-package com.example.studentmanagementsystem.activity;
+package com.example.studentmanagementsystem.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.studentmanagementsystem.StudentAddUpdateFragment;
-import com.example.studentmanagementsystem.StudentListFragment;
+import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
+import com.example.studentmanagementsystem.fragment.StudentListFragment;
 
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {

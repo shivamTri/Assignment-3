@@ -1,44 +1,26 @@
 package com.example.studentmanagementsystem.activity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.studentmanagementsystem.CommunicationFragment;
+import com.example.studentmanagementsystem.adapter.ViewPagerAdapter;
+import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.R;
-import com.example.studentmanagementsystem.StudentAddUpdateFragment;
-import com.example.studentmanagementsystem.StudentListFragment;
-import com.example.studentmanagementsystem.comparator.SortByName;
+import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
+import com.example.studentmanagementsystem.fragment.StudentListFragment;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
-import com.example.studentmanagementsystem.model.BackgroundTask;
 import com.example.studentmanagementsystem.model.StudentDetails;
-import com.example.studentmanagementsystem.comparator.SortByRoll;
-import com.example.studentmanagementsystem.constants.Constants;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
-public class MainActivity extends AppCompatActivity implements CommunicationFragment {
+public class MainActivity extends AppCompatActivity implements CommunicationFragmentInterface {
     private RecyclerView student_rv;
     private ArrayList<StudentDetails> studentArrayList = new ArrayList<>();
     private Button mButton;

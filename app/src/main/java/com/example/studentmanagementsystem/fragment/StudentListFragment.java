@@ -1,46 +1,36 @@
-package com.example.studentmanagementsystem;
+package com.example.studentmanagementsystem.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.example.studentmanagementsystem.activity.MainActivity;
+import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.activity.StudentActivity;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
-import com.example.studentmanagementsystem.comparator.SortByName;
-import com.example.studentmanagementsystem.comparator.SortByRoll;
 import com.example.studentmanagementsystem.constants.Constants;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
+import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.model.StudentDetails;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class StudentListFragment extends Fragment {
-    private CommunicationFragment mCommunicationFragment;
+    private CommunicationFragmentInterface mCommunicationFragmentInterface;
     private View view;
     private Context mContext;
     private static final String SORT_BY_ROLL_NUMBER = "roll no";
@@ -97,7 +87,7 @@ public class StudentListFragment extends Fragment {
                 Bundle bundle=new Bundle();
                 bundle.putSerializable(Constants.STUDENT_DATA_List,mStudent);
                 bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
-                mCommunicationFragment.communication(bundle);
+                mCommunicationFragmentInterface.communication(bundle);
             }
         });
         return view;
@@ -132,7 +122,7 @@ public class StudentListFragment extends Fragment {
                         bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
                         bundle.putSerializable(Constants.STUDENT_DATA,mStudent.get(pos));
                         positionEditStudentData=pos;
-                        mCommunicationFragment.communication(bundle);
+                        mCommunicationFragmentInterface.communication(bundle);
 //set adapter position of item Clicked
                         break;
                     case DELETE:
@@ -224,8 +214,8 @@ public class StudentListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext=context;
-        if (context instanceof CommunicationFragment) {
-            mCommunicationFragment = (CommunicationFragment) context;
+        if (context instanceof CommunicationFragmentInterface) {
+            mCommunicationFragmentInterface = (CommunicationFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement Cummunication");
@@ -236,7 +226,7 @@ public class StudentListFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mCommunicationFragment=null;
+        mCommunicationFragmentInterface =null;
     }
 
     public void update(Bundle bundleFrom2Fragment){

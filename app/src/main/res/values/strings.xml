@@ -27,6 +27,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="valid_name">valid name</string>
+    <string name="valid_rollNumber">valid roll</string>
+    <string name="same_roll_error">different</string>
 
 
 </resources>

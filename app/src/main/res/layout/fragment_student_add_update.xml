@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".StudentAddUpdateFragment">
+    tools:context=".fragment.StudentAddUpdateFragment">
 
     <EditText
         android:id="@+id/name"
