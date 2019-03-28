@@ -1,13 +1,19 @@
 package com.example.studentmanagementsystem.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Vibrator;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.model.BackgroundIntentService;
@@ -25,6 +31,7 @@ public class StudentActivity extends AppCompatActivity {
    private StudentDetails mStudentDetails;
    private ArrayList<StudentDetails> studentDetailsArrayList;
    private String selectOnClick;
+   private StudentBroadcastReceiver mStudentBroadcastReceiver;
    private int buttonWork;
     private static final String DETAIL_VIEW="View";
    private static final String DETAIL_ADD="Add";
@@ -40,6 +47,7 @@ public class StudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStudentBroadcastReceiver=new StudentBroadcastReceiver();
         setContentView(R.layout.activity_student);
         init();
 
@@ -179,12 +187,11 @@ public class StudentActivity extends AppCompatActivity {
                     case SERVICE:
                         Intent intentService=new Intent(StudentActivity.this, BackgroundService.class);
                         doTask(intentService,rollNo,fullName,typeOperation);
-                        finish();
+
                         break;
                     case INTENT_SERVICE:
                         Intent intentForService=new Intent(StudentActivity.this, BackgroundIntentService.class);
                         doTask(intentForService,rollNo,fullName,typeOperation);
-                        finish();
                         break;
                 }
             }
@@ -206,5 +213,30 @@ public class StudentActivity extends AppCompatActivity {
         startService(intent);
 
     }
+    public class StudentBroadcastReceiver extends BroadcastReceiver {
+        private Bundle sendBundleFromThis;
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(Constants.VIBRATE_MILI_SECOND);
+            Toast.makeText(context, intent.getStringExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY), Toast.LENGTH_SHORT).show();
+           finish();
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStudentBroadcastReceiver);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Constants.FILTER_ACTION_KEY);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mStudentBroadcastReceiver,intentFilter);
+    }
 }

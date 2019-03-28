@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.studentmanagementsystem">
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -22,6 +23,7 @@
         <service android:name=".model.BackgroundService"
             android:exported="false">
         </service>
+        <receiver android:name=".activity.StudentActivity$StudentBroadcastReceiver"/>
     </application>
 
 </manifest>

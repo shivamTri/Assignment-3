@@ -15,5 +15,8 @@ public class Constants  {
     public static final String ADD_TOAST="added successfully";
     public static final String EDIT_TOAST="edited successfully";
     public static final int ARRAYLIST_SIZE_ZERO = 0;
+    public static final String FILTER_ACTION_KEY="key";
 
+
+    public static final int VIBRATE_MILI_SECOND = 500;
 }
