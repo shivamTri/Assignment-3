@@ -43,10 +43,14 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /*
      *onBindViewHolder binds data and set the title on the recycler view.
      */
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        StudentDetails title= mStudentArrrayList.get(i);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        position = viewHolder.getAdapterPosition();
+        StudentDetails title= mStudentArrrayList.get(position);
         String studentName=title.getName();
+        String studentRoll=title.getRollNo();
         ( (StudentViewHolder) viewHolder).textView.setText(studentName);
+        ( (StudentViewHolder) viewHolder).tv_roll.setText(studentRoll);
+
     }
 
     @Override
@@ -59,12 +63,13 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     class StudentViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView textView,tv_roll;
 
         public StudentViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             textView=itemView.findViewById(R.id.text);
+            tv_roll=itemView.findViewById(R.id.tv_roll);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

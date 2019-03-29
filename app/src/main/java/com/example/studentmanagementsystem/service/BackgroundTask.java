@@ -1,4 +1,4 @@
-package com.example.studentmanagementsystem.model;
+package com.example.studentmanagementsystem.service;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -7,20 +7,25 @@ import android.widget.Toast;
 import com.example.studentmanagementsystem.constants.Constants;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
 
+import java.util.ArrayList;
+
 
 /**
  * this is background class for adding and updating data from data base.
  */
 public class BackgroundTask extends AsyncTask<String,Void,String> {
     private Context mContext;
+    private CallBack callBack;
 
-    public BackgroundTask(Context mContext) {
+    public BackgroundTask(Context mContext, CallBack callBack) {
         this.mContext = mContext;
+        this.callBack = callBack;
     }
 
     /**
      * this method is called when Async executes.
      */
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -52,15 +57,25 @@ public class BackgroundTask extends AsyncTask<String,Void,String> {
             case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
                 dataBaseHelper.update_name(full_name,roll_no);
                 return Constants.EDIT_TOAST;
+            case Constants. TYPE_ACTION_FROM_MAIN_ACTIVITY_DELETE:
+                dataBaseHelper.deleteContact(roll_no);
+                return Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_DELETE;
 
             default:
         }
         return null;
 
+
     }
 
+    @Override
+    protected void onPostExecute(String s) {
+        callBack.sendBack(s);
+    }
 
-
+    public interface CallBack{
+         void sendBack(String str);
+    }
 
 
 

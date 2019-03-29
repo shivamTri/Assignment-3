@@ -16,11 +16,13 @@
     <string name="toast_student_added">student added</string>
     <string name="student_changed">changed</string>
     <string name="no_data">NO STUDENT ADDED</string>
-    <string name="dialog_delete">deleted</string>
+    <string name="dialog_delete">delete</string>
     <string name="switch_view">View</string>
     <string name="invalid_name_message">Enter valid name</string>
     <string name="invalid_rollNo_message">Enter valid roll number</string>
     <string name="same_rollNo_message">Roll number should be different</string>
+    <string name="stu_roll">roll</string>
+    <string name="alert_title_delete">Delete By</string>
 
 
 </resources>

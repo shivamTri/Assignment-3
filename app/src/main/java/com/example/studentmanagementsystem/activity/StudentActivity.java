@@ -2,12 +2,10 @@ package com.example.studentmanagementsystem.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,16 +14,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.studentmanagementsystem.R;
-import com.example.studentmanagementsystem.model.BackgroundIntentService;
-import com.example.studentmanagementsystem.model.BackgroundService;
-import com.example.studentmanagementsystem.model.BackgroundTask;
+import com.example.studentmanagementsystem.service.BackgroundTask;
+import com.example.studentmanagementsystem.model.GenerateDialog;
 import com.example.studentmanagementsystem.model.StudentDetails;
 import com.example.studentmanagementsystem.util.ValidUtil;
 import com.example.studentmanagementsystem.constants.Constants;
 
 import java.util.ArrayList;
 
-public class StudentActivity extends AppCompatActivity {
+public class StudentActivity extends AppCompatActivity implements BackgroundTask.CallBack {
    private EditText sName,sRollNo;
    private Button btn_addStudent;
    private StudentDetails mStudentDetails;
@@ -33,15 +30,7 @@ public class StudentActivity extends AppCompatActivity {
    private String selectOnClick;
    private StudentBroadcastReceiver mStudentBroadcastReceiver;
    private int buttonWork;
-    private static final String DETAIL_VIEW="View";
-   private static final String DETAIL_ADD="Add";
-   private static final String DETAIL_EDIT="Edit";
-   private static final int REQUEST_CODE_EDIT=2;
-   private static final int ASYNC_TASK=0;
-   private static final int SERVICE=1;
-   private static final int INTENT_SERVICE=2;
-   private static final String[] ITEM_DAILOG={"Async task","Service","Intent service"};
-
+   private GenerateDialog generateDialog;
 
 
     @Override
@@ -49,6 +38,7 @@ public class StudentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mStudentBroadcastReceiver=new StudentBroadcastReceiver();
         setContentView(R.layout.activity_student);
+        generateDialog=new GenerateDialog(this);
         init();
 
         /**
@@ -59,7 +49,7 @@ public class StudentActivity extends AppCompatActivity {
          * used if else if to check which action to be performed.
          */
         switch (selectOnClick){
-            case DETAIL_VIEW:
+            case Constants.DETAIL_VIEW:
                 mStudentDetails =(StudentDetails) getIntent().getSerializableExtra(Constants.STUDENT_DATA);
                 sName.setText(mStudentDetails.getName().toUpperCase());
                 sRollNo.setText(mStudentDetails.getRollNo().toUpperCase());
@@ -67,11 +57,11 @@ public class StudentActivity extends AppCompatActivity {
                 sRollNo.setEnabled(false);
                 btn_addStudent.setVisibility(View.GONE);
                 break;
-            case DETAIL_ADD:
+            case Constants.DETAIL_ADD:
                 buttonWork=1;
                 studentDetailsArrayList=(ArrayList<StudentDetails>) getIntent().getSerializableExtra(Constants.STUDENT_DATA);
                 break;
-            case DETAIL_EDIT:
+            case Constants.DETAIL_EDIT:
                 sRollNo.setEnabled(false);
                 buttonWork=2;
                 mStudentDetails =(StudentDetails) getIntent().getSerializableExtra(Constants.STUDENT_DATA);
@@ -114,7 +104,7 @@ public class StudentActivity extends AppCompatActivity {
                             Intent addIntent = new Intent();
                             addIntent.putExtra(Constants.STUDENT_DATA, studentDetails);
                             setResult(RESULT_OK, addIntent);
-                            generateAlertDialog(roll,name,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
+                            generateDialog.generateAlertDialog(roll,name,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
                         }
                         break;
 
@@ -132,7 +122,7 @@ public class StudentActivity extends AppCompatActivity {
                            // eIntent.putExtra(Constants.POSITION_STUDENT_DATA,position);
                             eIntent.putExtra(Constants.POSITION_STUDENT_ROLL,roll);
                             setResult(RESULT_OK, eIntent);
-                            generateAlertDialog(roll,name,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
+                            generateDialog.generateAlertDialog(roll,name,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
 
                         }
                         break;
@@ -148,13 +138,6 @@ public class StudentActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * @param roll is roll number of the student which is going to be matched if there is any existing roll number or not.
-     * @return
-     */
-
-
-
     private void init(){
         sName=findViewById(R.id.name);
         sRollNo=findViewById(R.id.roll);
@@ -162,60 +145,20 @@ public class StudentActivity extends AppCompatActivity {
 
     }
 
-    private void generateAlertDialog(final String rollNo, final String fullName, final String typeOperation){
-
-        final AlertDialog.Builder mBuilder=new AlertDialog.Builder(StudentActivity.this);
-        if(buttonWork==REQUEST_CODE_EDIT)
-            mBuilder.setTitle(R.string.dialog_title_update);
-        else
-            mBuilder.setTitle(R.string.dialog_title_add);
-
-//setting SingleChoiceItem onClick
-        mBuilder.setSingleChoiceItems(ITEM_DAILOG, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-//set which choice is selected
-                buttonWork=which;
-                dialog.dismiss();
-
-                switch (buttonWork){
-                    case ASYNC_TASK:
-                        (new BackgroundTask(StudentActivity.this)).execute(typeOperation,rollNo,fullName);
-                        finish();
-                        break;
-                    case SERVICE:
-                        Intent intentService=new Intent(StudentActivity.this, BackgroundService.class);
-                        doTask(intentService,rollNo,fullName,typeOperation);
-
-                        break;
-                    case INTENT_SERVICE:
-                        Intent intentForService=new Intent(StudentActivity.this, BackgroundIntentService.class);
-                        doTask(intentForService,rollNo,fullName,typeOperation);
-                        break;
-                }
-            }
-        });
-        mBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        AlertDialog mDialog=mBuilder.create();
-        mDialog.show();
-
+    @Override
+    public void sendBack(String str) {
+        Toast.makeText(this,str,Toast.LENGTH_LONG).show();
+        finish();
     }
-    private void doTask(Intent intent,String rollNo,String fullName,String typeOperation){
-        intent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,typeOperation);
-        intent.putExtra(Constants.POSITION_STUDENT_ROLL,rollNo);
-        intent.putExtra(Constants.POSITION_STUDENT_NAME,fullName);
-        startService(intent);
 
-    }
+
+
+    /**
+     * in this method vibrator is  added as it vibrates when data is added or updated.
+     */
     public class StudentBroadcastReceiver extends BroadcastReceiver {
-        private Bundle sendBundleFromThis;
-
+        //private Bundle sendBundleFromThis;
+        //recieving data signal from service and intent service whether action has been performed or not.
         @Override
         public void onReceive(Context context, Intent intent) {
 

@@ -1,9 +1,14 @@
 package com.example.studentmanagementsystem.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import android.content.IntentFilter;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,7 +29,8 @@ import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.comparator.SortByName;
 import com.example.studentmanagementsystem.adapter.StudentAdaptor;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
-import com.example.studentmanagementsystem.model.BackgroundTask;
+import com.example.studentmanagementsystem.service.BackgroundTask;
+import com.example.studentmanagementsystem.model.GenerateDialog;
 import com.example.studentmanagementsystem.model.StudentDetails;
 import com.example.studentmanagementsystem.comparator.SortByRoll;
 import com.example.studentmanagementsystem.constants.Constants;
@@ -33,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BackgroundTask.CallBack {
     private RecyclerView student_rv;
     private ArrayList<StudentDetails> studentArrayList=new ArrayList<>();
     private Button mButton;
@@ -43,18 +49,20 @@ public class MainActivity extends AppCompatActivity {
     private static final String [] choice={"name","roll no"};
     private int mPosition;
     private boolean mToggle =true;
-    private int posi;
-    private final static String ALERT_TITLE="Choose Action";
-    private static final String DETAIL_VIEW="View";
-    private static final String DETAIL_EDIT="Edit";
-    private static final String DETAIL_DELETE="Delete";
+    private int mEditPosition;
     private static final String SORT_BY_ROLL_NUMBER ="roll no";
     private static final String [] listItems={"View","Edit","Delete"};
     private  static final String SORTED_BY_ROLL="Sorted by roll number";
-    private  static final String SORTED_BY_NAME="Sorted by name";
+    private int mDeletePosition;
+    private GenerateDialog generateDialog;
+    private StudentBroadcastReceiver mStudentBroadcastReceiver;
+
+   // private Context mContext;
+    private static final String[] ITEM_DAILOG={"Async task","Service","Intent service"};
+
+    // private  static final String SORTED_BY_NAME="Sorted by name";
     private static final String SORT_BY_NAME="name";
     private StudentDataBaseHelper studentDataBaseHelper;
-    private BackgroundTask backgroundTask;
 
 
     @Override
@@ -62,12 +70,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mStudentBroadcastReceiver=new StudentBroadcastReceiver();
+        generateDialog=new GenerateDialog(this);
         setTitle("StudentActivity");
 
         studentDataBaseHelper=new StudentDataBaseHelper(this);
         studentArrayList=studentDataBaseHelper.getData();
         init();
         if(studentArrayList.size()==0){
+
             mText.setText(getString(R.string.no_data));
         }
 
@@ -76,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemCLick(final int position) {
 
                 final AlertDialog.Builder alertBuilder=new AlertDialog.Builder(MainActivity.this);
-                alertBuilder.setTitle(ALERT_TITLE);
+                alertBuilder.setTitle(Constants.ALERT_TITLE);
                 alertBuilder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -85,83 +96,59 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,select,Toast.LENGTH_SHORT).show();
 
                         dialog.dismiss();
+                        mEditPosition =position;
+
                         switch (select){
-                            case DETAIL_VIEW:
+                            case Constants.DETAIL_VIEW:
                                 Intent viewIntent=new Intent(MainActivity.this, StudentActivity.class);
                                 viewIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
-                                viewIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,DETAIL_VIEW);
+                                viewIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.DETAIL_VIEW);
                                 startActivity(viewIntent);
                                 break;
 
-                            case DETAIL_EDIT:
+                            case Constants.DETAIL_EDIT:
                                 Intent editIntent=new Intent(MainActivity.this, StudentActivity.class);
                                 editIntent.putExtra(Constants.STUDENT_DATA,studentArrayList.get(position));
-                                editIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,DETAIL_EDIT);
-                                posi=position;
+                                editIntent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.DETAIL_EDIT);
                                 startActivityForResult(editIntent,2);
                                 break;
-                            case DETAIL_DELETE:
-                                AlertDialog.Builder deleteDilog=new AlertDialog.Builder(MainActivity.this);
-                                deleteDilog.setTitle(R.string.delete_confirmation);
-                                deleteDilog.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                });
+                            case Constants.DETAIL_DELETE:
+                                generateDialog.generateAlertDialog(studentArrayList.get(position).getRollNo(),
+                                        studentArrayList.get(position).getName(),
+                                        Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_DELETE);
 
 
-                                deleteDilog.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                       studentDataBaseHelper.deleteContact(studentArrayList.get(position).getRollNo());
-                                        //backgroundTask.execute("delete_data");
-                                        studentArrayList.remove(position);
-                                       // backgroundTask.execute("delete_data");
-                                        Toast.makeText(MainActivity.this,getString(R.string.dialog_delete),Toast.LENGTH_SHORT).show();
-                                        mAdapter.notifyDataSetChanged();
-                                        if(studentArrayList.size()==0){
-                                            mText.setVisibility(View.VISIBLE);
-                                        }
-                                    }
-                                });
-
-                                AlertDialog alertDelete=deleteDilog.create();
-                                alertDelete.show();
                         }
-
-
 
                     }
 
                 });
+
                 alertBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                     }
                 });
 
                 AlertDialog mDialog=alertBuilder.create();
                 mDialog.show();
 
-
             }
 
 
         });
 
-
-
-
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent nextActivity=new Intent(MainActivity.this, StudentActivity.class);
                 nextActivity.putExtra(Constants.STUDENT_DATA,studentArrayList);
                 nextActivity.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,"Add");
                 startActivityForResult(nextActivity,1);
             }
         });
+
     }
 
     /**
@@ -211,10 +198,10 @@ public class MainActivity extends AppCompatActivity {
                 String id=data.getStringExtra(Constants.POSITION_STUDENT_ROLL);
                // backgroundTask.execute("update_data");
                 //studentDataBaseHelper.update_name(name,id);
-                StudentDetails std=studentArrayList.get(posi);
+                StudentDetails std=studentArrayList.get(mEditPosition);
                 std.setName(name);
                 std.setId(id);
-                mAdapter.notifyItemChanged(posi);
+                mAdapter.notifyItemChanged(mEditPosition);
 
             }
         }
@@ -276,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
             student_rv.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
 
         }
-
         else {
              mToggle =true;
              item.setIcon(R.drawable.ic_grid_off_black_24dp);
@@ -289,19 +275,54 @@ public class MainActivity extends AppCompatActivity {
     {
 
         mButton =findViewById(R.id.addNext);
-        student_rv = findViewById(R.id.studentlist_tv);
-
-        student_rv.setLayoutManager(new LinearLayoutManager(this));
-        student_rv.setAdapter(mAdapter);
         mText=findViewById(R.id.nodata);
+        student_rv = findViewById(R.id.studentlist_tv);
+        student_rv.setLayoutManager(new LinearLayoutManager(this));
         mAdapter=new StudentAdaptor(studentArrayList);
-
         student_rv.setAdapter(mAdapter);
 
-        backgroundTask= new BackgroundTask(this);
 
+    }
 
+    @Override
+    public void sendBack(String str) {
+        studentArrayList.remove(mEditPosition);
+        mAdapter.notifyItemChanged(mEditPosition);
+        if(studentArrayList.size()==0){
+            mText.setVisibility(View.VISIBLE);
+        }
 
+    }
+
+   public class StudentBroadcastReceiver extends BroadcastReceiver {
+       //private Bundle sendBundleFromThis;
+
+       @Override
+       public void onReceive(Context context, Intent intent) {
+
+           Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+           vibrator.vibrate(Constants.VIBRATE_MILI_SECOND);
+           studentArrayList.remove(mEditPosition);
+           mAdapter.notifyItemRemoved(mEditPosition);
+           if(studentArrayList.size()==0){
+               mText.setVisibility(View.VISIBLE);
+           }
+
+       }
+
+   }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStudentBroadcastReceiver);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Constants.FILTER_KEY_DELETE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mStudentBroadcastReceiver,intentFilter);
     }
 
 }

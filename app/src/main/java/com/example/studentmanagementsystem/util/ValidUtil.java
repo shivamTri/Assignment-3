@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 
 public final class ValidUtil {
 
-
-
     /*
      * Regex have been used to validate name.
      */
@@ -36,6 +34,13 @@ public final class ValidUtil {
         return matcher.matches();
 
     }
+
+    /**
+     * this method is to validate whether id is unique.
+     * @param roll
+     * @param checkStudentArrayList
+     * @return
+     */
     public static boolean isCheckValidId(final String roll,ArrayList<StudentDetails> checkStudentArrayList) {
         for (StudentDetails rollNumber : checkStudentArrayList) {
             if (rollNumber.getRollNo().equals(roll)) {

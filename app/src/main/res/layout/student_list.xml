@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="15dp">
 
     <TextView
@@ -13,7 +14,17 @@
         android:background="@android:color/darker_gray"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="@dimen/name_padding"
         android:id="@+id/text"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_roll"
+        android:textSize="12sp"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:text="@string/stu_roll"
+        android:padding="@dimen/roll_padding"/>
 
 </LinearLayout>

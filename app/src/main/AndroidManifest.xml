@@ -18,9 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".model.BackgroundIntentService"
+        <service android:name=".service.BackgroundIntentService"
             android:exported="false"/>
-        <service android:name=".model.BackgroundService"
+        <service android:name=".service.BackgroundService"
             android:exported="false">
         </service>
         <receiver android:name=".activity.StudentActivity$StudentBroadcastReceiver"/>

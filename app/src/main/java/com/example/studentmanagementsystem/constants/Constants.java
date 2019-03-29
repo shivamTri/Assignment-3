@@ -3,20 +3,28 @@ package com.example.studentmanagementsystem.constants;
 import android.content.Context;
 import android.widget.Toast;
 
-public class Constants  {
-    public static final String STUDENT_DATA="student_data";
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY="action_perform";
+public interface Constants  {
+     String STUDENT_DATA="student_data";
+     String TYPE_ACTION_FROM_MAIN_ACTIVITY="action_perform";
+     String DETAIL_ADD="Add";
+
     //public static final String POSITION_STUDENT_DATA="Position";
-    public static final String POSITION_STUDENT_NAME="Name";
-    public static final String POSITION_STUDENT_ROLL="Rollnumber";
-    public static final String SET_ERROR_NAME="Enter valid name";
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD="add_data";
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT="edit_data";
-    public static final String ADD_TOAST="added successfully";
-    public static final String EDIT_TOAST="edited successfully";
-    public static final int ARRAYLIST_SIZE_ZERO = 0;
-    public static final String FILTER_ACTION_KEY="key";
+     String POSITION_STUDENT_NAME="Name";
+     String POSITION_STUDENT_ROLL="Rollnumber";
+    String ALERT_TITLE="Choose Action";
 
+    String SET_ERROR_NAME="Enter valid name";
+     String TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD="add_data";
+     String TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT="edit_data";
+     String TYPE_ACTION_FROM_MAIN_ACTIVITY_DELETE="Delete";
+     String DETAIL_EDIT="Edit";
+     String DETAIL_VIEW="View";
+    String DETAIL_DELETE="Delete";
 
-    public static final int VIBRATE_MILI_SECOND = 500;
+    String ADD_TOAST="added successfully";
+     String EDIT_TOAST="edited successfully";
+     String FILTER_ACTION_KEY="key";
+     int VIBRATE_MILI_SECOND = 500;
+     String FILTER_KEY_DELETE="Delete";
+
 }
