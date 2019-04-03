@@ -27,7 +27,6 @@ public class StudentDataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //String createTable="CREATE TABLE"+TABLE_NAME+"(ID INTEGER PRIMARY KEY AUTOINCREMENT,"+"NAME TEXT)";
         db.execSQL(createTable);
 
     }
@@ -78,7 +77,6 @@ public class StudentDataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COL_NAME,name);
         db.update(TABLE_NAME, cv, COL_ROLL+" = ?", new String[]{rollNo});
-        //db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_NAME+" = "+name+" WHERE "+COL_ROLL+"="+Integer.parseInt(rollNo));
         db.close();
     }
 }
