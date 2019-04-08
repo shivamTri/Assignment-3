@@ -1,24 +1,24 @@
 package com.example.studentmanagementsystem.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.studentmanagementsystem.BroadcasteReciever.StudentBroadcastReciever;
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.constants.Constants;
-import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
-import com.example.studentmanagementsystem.model.BackgroundIntentService;
-import com.example.studentmanagementsystem.model.BackgroundService;
-import com.example.studentmanagementsystem.model.BackgroundTaskAsync;
-import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
+import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterface;
+import com.example.studentmanagementsystem.dialog.GenerateDialog;
+import com.example.studentmanagementsystem.service.BackgroundTaskAsync;
 import com.example.studentmanagementsystem.model.StudentDetails;
 import com.example.studentmanagementsystem.util.ValidUtil;
 
@@ -26,62 +26,77 @@ import java.util.ArrayList;
 
 
 
-public class StudentAddUpdateFragment extends Fragment {
+public class StudentAddUpdateFragment extends Fragment implements BackgroundTaskAsync.SendCallBack, StudentBroadcastReciever.SendBroadCastMessage {
+    private CommunicationFragmentInterface communicationFragmentInterface;
     private View view;
-    private Context mContext;
-    public static final int REQUEST_CODE_ADD=1;
-    public static final int REQUEST_CODE_EDIT=0;
-    public static final int ASYNC_TASK=0;
-    public static final int SERVICE=1;
-    public static final int INTENT_SERVICE=2;
-    public final static String[] ITEM_DAILOG={"AsyncTask" , "Service" , "Intent Service"};
+    private ArrayList<StudentDetails> studentDetailsArrayList;
     private EditText et_name;
-    private EditText et_rollNum;
-    private Button mButtonAdd;
-    private int selectButtonOperation=1;
-    private String typeAction;
-    private Bundle bundle;
-    private StudentDetails editStudentDetail;
+    private EditText et_rollNo;
+    private Button btn_add_student;
+    private int buttonOperation=-1;
     private boolean errorHandling;
-    private int select;
-    private StudentDataBaseHelper studentDataBaseHelper;
-    private CommunicationFragmentInterface mListener;
-    private ArrayList<StudentDetails> studentList=new ArrayList<>();
+    private Bundle bundle;
+    private Context mContext;
+    private GenerateDialog generateDialog;
+    private StudentBroadcastReciever studentBroadcastReciever;
+
+
+    private StudentDetails studentDetails;
+
 
     public StudentAddUpdateFragment() {
-// Required empty public constructor
     }
 
 
+    // TODO: Rename and change types and number of parameters
+    public static StudentAddUpdateFragment newInstance(String param1, String param2) {
+        StudentAddUpdateFragment fragment = new StudentAddUpdateFragment();
+        //Bundle args = new Bundle();
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("onRecieve", "onCreate: ");
+
         super.onCreate(savedInstanceState);
 
+
+
     }
+
+    /**
+     * in this method layout is inflated and views are created .
+     * button onclick is being performed here.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-// Inflate the layout for this fragment
-        view= inflater.inflate(R.layout.fragment_student_add_update, container, false);
-        studentDataBaseHelper=new StudentDataBaseHelper(mContext);
-        bundle=new Bundle();
-        bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
+        Log.d("onRecieve", "onCreateView: ");
+        generateDialog=new GenerateDialog(mContext, (BackgroundTaskAsync.SendCallBack) this);
+        studentBroadcastReciever=new StudentBroadcastReciever();
+        studentBroadcastReciever.setSendBroadCastMessageUpdate(this);
 
-        initValues();
-
-//set click listener to button
-        mButtonAdd.setOnClickListener(new View.OnClickListener() {
+        view = inflater.inflate(R.layout.fragment_student_add_update, container, false);
+        init();
+        btn_add_student.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 errorHandling=true;
-                switch (selectButtonOperation){
-                    case REQUEST_CODE_EDIT:
-                        editButtonOnClick();
+                switch(buttonOperation){
+                    case Constants.Edit:
+                        editStudentData();
                         break;
-                    case REQUEST_CODE_ADD:
-                        addButtonOnClick();
+                    case Constants.Add:
+                        addStudentData();
+                        break;
+                    default:
                         break;
                 }
             }
@@ -89,174 +104,179 @@ public class StudentAddUpdateFragment extends Fragment {
         return view;
     }
 
-    private void initValues(){
-        et_name =view.findViewById(R.id.et_name);
-        et_rollNum =view.findViewById(R.id.et_rollNum);
-        mButtonAdd=view.findViewById(R.id.addbutton);
-    }
-
-
     /**
-     * This function provide functionalities of add button
-     *get data from edittext then validate
+     * in this method validation of name and roll no is being done.
+     * data is being passed to services.
      */
-    private void addButtonOnClick(){
 
-        String fName = et_name.getText().toString().trim();
-        String sRollNo = et_rollNum.getText().toString().trim();
+    private void addStudentData() {
+        String sName = et_name.getText().toString().trim();
+        String sRollNo = et_rollNo.getText().toString().trim();
 
-        if (!ValidUtil.validateName(fName)) {
-            et_name.setError(getString(R.string.valid_name));
+        if (!ValidUtil.validateName(sName)) {
+            et_name.setError(getString(R.string.invalid_name));
             errorHandling = false;
         }
-
         if (!ValidUtil.validateRollNumber(sRollNo)) {
-            et_rollNum.setError(getString(R.string.valid_rollNumber));
+            et_rollNo.setError(getString(R.string.invalid_roll_no));
             errorHandling = false;
         }
-        else if (ValidUtil.isCheckValidId(studentList,sRollNo)) {
-            et_rollNum.setError(getString(R.string.same_roll_error));
+        if (ValidUtil.isCheckValidId(studentDetailsArrayList,sRollNo)) {
+            et_rollNo.setError(getString(R.string.same_rollNum_error));
             errorHandling = false;
         }
         if (errorHandling) {
 
-            StudentDetails student = new StudentDetails(fName.toUpperCase(),sRollNo);
+            StudentDetails student = new StudentDetails(sName.toUpperCase(),sRollNo);
             bundle.putSerializable(Constants.STUDENT_DATA,student);
-            generateAlertDialog(sRollNo,fName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
-
+            generateDialog.generateAlertDialog(sRollNo,sName,Constants.ACTION_TYPE_ADD);
         }
+
     }
 
+
     /**
-     * This function provide functionalities for Updation
-     *get data from edittext then validate
+     * in this method data of student is being altered in database by using services.
      */
-    private void editButtonOnClick(){
+    private void editStudentData() {
         String fName = et_name.getText().toString().trim();
 
         if (!ValidUtil.validateName(fName)) {
-            et_name.setError(getString(R.string.invalid_name_message));
+            et_name.setError(getString(R.string.invalid_name));
             errorHandling = false;
         }
 
         if (errorHandling) {
             bundle.putString(Constants.NAME,fName);
-            generateAlertDialog(editStudentDetail.getRollNo(),fName,Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
+            generateDialog.generateAlertDialog(studentDetails.getRollNo(),fName,Constants.ACTION_TYPE_EDIT);
+
         }
+
     }
 
-
-
+    // TODO: Rename method, update argument and hook method into UI event
 
     /**
-     * This method used to generate Dialog Box having 3 choose for Background thread
-     *
-     * @param rollNo of String type
-     * @param fullName of String type
-     * @param typeOperation of String type used to check operation
+     * this method is called when fragment is attached.
+     * @param context
      */
-
-    private void generateAlertDialog(final String rollNo, final String fullName, final String typeOperation){
-
-        final AlertDialog.Builder mBuilder=new AlertDialog.Builder(mContext);
-        if(selectButtonOperation==REQUEST_CODE_EDIT)
-            mBuilder.setTitle(R.string.dialog_title_update);
-        else
-            mBuilder.setTitle(R.string.dialog_title_add);
-
-        mBuilder.setSingleChoiceItems(ITEM_DAILOG, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                select=which;
-                dialog.dismiss();
-
-                switch (select){
-                    case ASYNC_TASK:
-// (new BackSetUpdateData(mContext)).execute(typeOperation,rollNo,fullName);
-                        (new BackgroundTaskAsync(mContext)).execute(typeOperation,rollNo,fullName);
-                        break;
-                    case SERVICE:
-                        Intent service=new Intent(mContext, BackgroundService.class);
-                        startServiceWork(service,rollNo,fullName,typeOperation);
-                        break;
-                    case INTENT_SERVICE:
-                        Intent intentForService=new Intent(mContext, BackgroundIntentService.class);
-                        startServiceWork(intentForService,rollNo,fullName,typeOperation);
-                        break;
-                }
-                mListener.communication(bundle);
-
-            }
-        });
-        mBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        AlertDialog mDialog=mBuilder.create();
-        mDialog.show();
-
-    }
-    private void startServiceWork(Intent service,final String rollNo, final String fullName, final String typeOperation){
-        service.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY,typeOperation);
-        service.putExtra(Constants.ROLL_NO,rollNo);
-        service.putExtra(Constants.STUDENT_FULL_NAME,fullName);
-        mContext.startService(service);
-    }
-
-
     @Override
     public void onAttach(Context context) {
+        Log.d("onRecieve", "onAttach: ");
+
         super.onAttach(context);
         mContext=context;
         if (context instanceof CommunicationFragmentInterface) {
-            mListener = (CommunicationFragmentInterface) context;
+            communicationFragmentInterface = (CommunicationFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener=null;
     }
 
     /**
-     * this function is being called  in mainActivity for updation by interface method.
-     * @param bundleNew
+     * this method is called when fragment is detached.
      */
-    public void update(Bundle bundleNew){
-        bundle=bundleNew;
-        typeAction=bundle.getString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY);
-        switch (typeAction){
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD:
-                selectButtonOperation=REQUEST_CODE_ADD;
-                studentList=(ArrayList<StudentDetails>) bundle.getSerializable(Constants.STUDENT_DATA_List);
-                et_rollNum.setEnabled(true);
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        communicationFragmentInterface = null;
 
+    }
+
+    /**
+     * this method is getting the data from fragment and checking which action to be performed and doing the same.
+     * @param bundle
+     */
+    public void addStudent(Bundle bundle) {
+        String type=bundle.getString(Constants.ACTION_TYPE);
+        this.bundle=bundle;
+        switch (type){
+            case Constants.ACTION_TYPE_ADD:
+                buttonOperation=Constants.Add;
+                studentDetailsArrayList=(ArrayList<StudentDetails>) bundle.getSerializable(Constants.STUDENT_LIST);
+                et_rollNo.setEnabled(true);
                 break;
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
-                selectButtonOperation=REQUEST_CODE_EDIT;
-                mButtonAdd.setText(Constants.BTN_CHANGE_TEXT_UPDATE);
-                editStudentDetail=(StudentDetails) bundle.getSerializable(Constants.STUDENT_DATA);
-                et_name.setText(editStudentDetail.getName().toUpperCase());
-                et_rollNum.setText(editStudentDetail.getRollNo().toUpperCase());
-                et_rollNum.setEnabled(false);
-                //mButtonAdd.setVisibility(View.VISIBLE);
+            case Constants.ACTION_TYPE_EDIT:
+                buttonOperation=Constants.Edit;
+                studentDetails=(StudentDetails) bundle.getSerializable(Constants.STUDENT_DATA);
+                et_name.setText(studentDetails.getName().toUpperCase());
+                et_rollNo.setText(studentDetails.getRollNo().toUpperCase());
+                et_rollNo.setEnabled(false);
                 break;
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_VIEW:
-                editStudentDetail=(StudentDetails) bundle.getSerializable(Constants.STUDENT_DATA);
-                et_name.setText(editStudentDetail.getName().toUpperCase());
-                et_rollNum.setText(editStudentDetail.getRollNo().toUpperCase());
-                et_rollNum.setEnabled(false);
+            case Constants.ACTION_TYPE_VIEW:
+                studentDetails=(StudentDetails) bundle.getSerializable(Constants.STUDENT_DATA);
+                et_name.setText(studentDetails.getName().toUpperCase());
+                et_rollNo.setText(studentDetails.getRollNo().toUpperCase());
                 et_name.setEnabled(false);
-                mButtonAdd.setVisibility(View.GONE);
+                et_name.setEnabled(false);
+                btn_add_student.setVisibility(View.GONE);
+                break;
+            default:
                 break;
         }
+
     }
+
+    /**
+     * all views are being initialized here.
+     */
+    private void init(){
+        btn_add_student=view.findViewById(R.id.btn_add_student);
+        et_name=view.findViewById(R.id.et_name);
+        et_rollNo =view.findViewById(R.id.et_rollNum);
+
+    }
+
+    /**
+     * getting callback from async for delete opearation.
+     * @param s
+     */
+
+    @Override
+    public void sendBack(String s) {
+        if(!s.equals(Constants.ACTION_TYPE_DELETE)) {
+            Toast.makeText(mContext,s,Toast.LENGTH_LONG).show();
+            communicationFragmentInterface.communication(bundle);
+        }
+    }
+    /**
+     * Broadcast reciever is being registered in this method.
+     */
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Constants.FILTER_ACTION_KEY);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(studentBroadcastReciever,intentFilter);
+        Log.d("onRecieve", "onResume: ");
+    }
+
+    /**
+     * Broadcast reciever is being un registered .
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(studentBroadcastReciever);
+        //communicationFragmentInterface.communication(bundle);
+
+    }
+
+
+    @Override
+    public void sendCallMessage(String str) {
+        Toast.makeText(mContext,str,Toast.LENGTH_LONG).show();
+        clearEditText(et_name, et_rollNo);
+
+        communicationFragmentInterface.communication(bundle);
+    }
+    private void clearEditText(EditText et_name,EditText et_roll_no){
+        et_name.getText().clear();
+        et_roll_no.getText().clear();
+    }
+
+
 }
 

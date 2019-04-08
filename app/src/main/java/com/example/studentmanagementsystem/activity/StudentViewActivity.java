@@ -9,7 +9,7 @@ import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterf
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 
-public class StudentActivity extends AppCompatActivity implements CommunicationFragmentInterface {
+public class StudentViewActivity extends AppCompatActivity implements CommunicationFragmentInterface {
 
 
     private Bundle bundle;

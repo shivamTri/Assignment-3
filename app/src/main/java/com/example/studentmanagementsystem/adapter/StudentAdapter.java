@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * this is adapter class  extending viewholder class.
  */
-public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class StudentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<StudentDetails> mStudentArrayList;
     private OnItemClickListener mListener;
     public interface OnItemClickListener{
@@ -24,7 +24,7 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setOnClickListener(OnItemClickListener listener){
         mListener=listener;
     }
-    public StudentAdaptor(final ArrayList<StudentDetails> name){
+    public StudentAdapter(final ArrayList<StudentDetails> name){
         this.mStudentArrayList =name;
     }
 
@@ -46,7 +46,10 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         StudentDetails title= mStudentArrayList.get(i);
         String studentName=title.getName();
-        ( (StudentViewHolder) viewHolder).textView.setText(studentName);
+        String studentRoll=title.getRollNo();
+        ( (StudentViewHolder) viewHolder).tv_name.setText(studentName);
+        ( (StudentViewHolder) viewHolder).tv_roll.setText(studentRoll);
+
     }
 
     @Override
@@ -59,12 +62,13 @@ public class StudentAdaptor extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     class StudentViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView tv_name,tv_roll;
 
         public StudentViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-            textView=itemView.findViewById(R.id.text);
+            tv_name=itemView.findViewById(R.id.text);
+            tv_roll=itemView.findViewById(R.id.tv_roll);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

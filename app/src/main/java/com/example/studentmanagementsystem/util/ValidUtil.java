@@ -1,6 +1,5 @@
 package com.example.studentmanagementsystem.util;
 
-import com.example.studentmanagementsystem.activity.StudentActivity;
 import com.example.studentmanagementsystem.model.StudentDetails;
 
 import java.util.ArrayList;

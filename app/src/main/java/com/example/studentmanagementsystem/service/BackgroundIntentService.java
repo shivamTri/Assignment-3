@@ -1,4 +1,4 @@
-package com.example.studentmanagementsystem.model;
+package com.example.studentmanagementsystem.service;
 
 import android.app.IntentService;
 import android.content.Intent;

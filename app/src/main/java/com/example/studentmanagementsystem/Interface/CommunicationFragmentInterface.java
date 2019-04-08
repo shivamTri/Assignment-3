@@ -1,4 +1,4 @@
-package com.example.studentmanagementsystem.model;
+package com.example.studentmanagementsystem.Interface;
 
 import android.os.Bundle;
 

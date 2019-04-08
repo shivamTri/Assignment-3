@@ -3,52 +3,40 @@ package com.example.studentmanagementsystem.constants;
 import android.content.Context;
 import android.widget.Toast;
 
-public class Constants  {
-    public static final String STUDENT_DATA="student_data";
+public interface Constants  {
+    String STUDENT_LIST = "student list";
+    String ACTION_TYPE = "type";
+    String ACTION_TYPE_ADD = "Add";
+    String ACTION_TYPE_VIEW = "View";
+    String ACTION_TYPE_EDIT = "Edit";
+    String ROLL_NO = "roll no";
+    String NAME = "name";
+    String STUDENT_DATA = "Student data";
+    String[] ITEM_DAILOG={"AsyncTask" , "Service" , "Intent Service"};
 
-    public static final String STUDENT_DATA_List="student_data_List";
+    String ADD_TOAST = "Student Added";
+    String UPDATE_TOAST = "Updated ";
+    int ARRAYLIST_SIZE_ZERO=0;
+    int GRIDLAYOUT_SPAN=2;
+    String[] itemDialog = {"View", "Edit", "Delete"};
+    int VIEW=0;
+    int EDIT=1;
+    int DELETE=2;
+    String []choice = {"name", "roll no"};
+    int ASYNC_TASK=0;
+    int SERVICE=1;
+    int INTENT_SERVICE=2;
+    long VIBRATE_MILI_SECOND = 500;
+    String FILTER_ACTION_KEY = "key";
+    String FILTER_KEY_DELETE = "delete";
+    String ACTION_TYPE_DELETE = "delete data";
+     int Edit=0;
+     int Add=1;
+     String DATABASE_NAME="studentManagement.db";
+     int DATABASE_VERSION=1;
+    String TABLE_NAME="student";
+    String COL_NAME="Name";
+     String COL_ROLL="Roll_number";
 
-
-    //used for intent purpose to send data from one activity to other define action to other activity
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY="Action Performed";
-
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD="Add";
-
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_VIEW="View";
-
-    public static final String TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT="Edit";
-
-    // used for intent purpose to send data from one activity to other
-    public static final String NAME ="fname";
-
-    // used for intent purpose to send data from one activity to other
-    public static final String STUDENT_FULL_NAME="Studentname";
-
-    // used for intent purpose to send data from one activity to other
-    public static final String ROLL_NO="Roll_no";
-
-    // used to change text of button
-    public static final String BTN_CHANGE_TEXT_UPDATE="Update";
-
-    // used for set title of alert box
-    public static final String DELETE_ALERT_DIALOG_TITLE=" Do you want to Delete ";
-
-    public static final String CHOOSE_ALERT_DIALOG_TITLE=" Choose Action ";
-
-    public static final int CHECK_ARRAYLIST_SIZE_ZERO=0;
-
-    public static final String DELETE_TOAST="Deleted Successfully";
-
-    public static final String UPDATE_TOAST="Update Successfully";
-
-    public static final String ADD_TOAST="Added Successfully";
-
-    public static final String SORT_BY_NAME_TOAST="Sort By Name";
-
-    public static final String SORT_BY_ROLL_NO_TOAST="Sort By Roll No";
-
-    public static final String GRID_LAYOUT_RECYCLER_VIEW="Grid is Selected";
-
-    public static final String LINEAR_LAYOUT_RECYCLER_VIEW="Linear is Selected";
 
 }

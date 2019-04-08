@@ -3,10 +3,10 @@ package com.example.studentmanagementsystem.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,110 +25,152 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.studentmanagementsystem.BroadcasteReciever.StudentBroadcastReciever;
 import com.example.studentmanagementsystem.R;
-import com.example.studentmanagementsystem.activity.StudentActivity;
-import com.example.studentmanagementsystem.adapter.StudentAdaptor;
+import com.example.studentmanagementsystem.activity.StudentViewActivity;
+import com.example.studentmanagementsystem.adapter.StudentAdapter;
 import com.example.studentmanagementsystem.comparator.SortByName;
 import com.example.studentmanagementsystem.comparator.SortByRoll;
 import com.example.studentmanagementsystem.constants.Constants;
+import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
-import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
+import com.example.studentmanagementsystem.dialog.GenerateDialog;
+import com.example.studentmanagementsystem.service.BackgroundTaskAsync;
 import com.example.studentmanagementsystem.model.StudentDetails;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class StudentListFragment extends Fragment {
-    private CommunicationFragmentInterface mCommunicationFragmentInterface;
+public class StudentListFragment extends Fragment implements StudentBroadcastReciever.SendBroadCastMessage, BackgroundTaskAsync.SendCallBack {
+    private CommunicationFragmentInterface communicationFragmentInterface;
+    private RecyclerView rv_student;
+    private TextView tv_no_data;
     private View view;
     private Context mContext;
-    private static final String SORT_BY_ROLL_NUMBER = "roll no";
-    private static final String SORT_BY_NAME = "name";
-    public static final int VIEW = 0;
-    public static final int EDIT = 1;
-    public static final int DELETE = 2;
+    private Button btn_add_student;
+    private StudentAdapter studentAdapter;
+    private ArrayList<StudentDetails> studentList=new ArrayList<>();
+    private GenerateDialog generateDialog;
+    private int selectItem=-1;
 
-    public final static String[] itemDialog = {"VIEW", "EDIT", "DELETE"};
-    private ArrayList<StudentDetails> mStudent = new ArrayList<>();
-    private static final String[] choice = {"name", "roll no"};
-    private Button mButtonAddCuurent;
-    private StudentAdaptor mAdapter;
-    private TextView mTextView;
-    private int selectItem = -1;
-    private int positionEditStudentData;
-    private RecyclerView mRecyclerView;
-    private boolean toggleLayout = false;
-    private StudentDataBaseHelper mStudentDatabaseHelper;
+    int studentPosition;
+    private boolean layoutSwitch=false;
+    private StudentDataBaseHelper studentDataBase;
+    private StudentBroadcastReciever mStudentBroadcastReciever;
+
+
+    // TODO: Rename and change types of parameters
+
 
     public StudentListFragment() {
+
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mStudentDatabaseHelper = new StudentDataBaseHelper(mContext);
-        mStudent = mStudentDatabaseHelper.getData();
+        studentDataBase=new StudentDataBaseHelper(mContext);
+        generateDialog=new GenerateDialog(mContext, this);
+        mStudentBroadcastReciever=new StudentBroadcastReciever();
+        mStudentBroadcastReciever.setSendBroadCastMessageDelete( this);
+        studentList=studentDataBase.getData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_student_list, container, false);
-        initValues();
-
-
+        view= inflater.inflate(R.layout.fragment_student_list, container, false);
+        init();
         setHasOptionsMenu(true);
-        mButtonAddCuurent.setOnClickListener(new View.OnClickListener() {
+        btn_add_student.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(Constants.STUDENT_DATA_List, mStudent);
-                bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD);
-                mCommunicationFragmentInterface.communication(bundle);
+                bundle.putSerializable(Constants.STUDENT_LIST, studentList);
+                bundle.putString(Constants.ACTION_TYPE,Constants.ACTION_TYPE_ADD);
+                communicationFragmentInterface.communication(bundle);
             }
         });
         return view;
     }
 
 
-    private void onClickOfAdapter(final int pos) {
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext =context;
+        if (context instanceof CommunicationFragmentInterface) {
+            communicationFragmentInterface= (CommunicationFragmentInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        communicationFragmentInterface = null;
+    }
 
+    private void init() {
+
+        tv_no_data = view.findViewById(R.id.tv_no_data);
+        rv_student = view.findViewById(R.id.rv_student);
+        rv_student.setLayoutManager(new LinearLayoutManager(mContext));
+        btn_add_student = view.findViewById(R.id.btn_add);
+        studentAdapter = new StudentAdapter(studentList);
+        rv_student.setAdapter(studentAdapter);
+        if (studentList.size() == Constants.ARRAYLIST_SIZE_ZERO) {
+
+            tv_no_data.setText(getString(R.string.no_data));
+        }
+
+        studentAdapter.setOnClickListener(new StudentAdapter.OnItemClickListener() {
+            @Override
+            public void onItemCLick(int position) {
+                adapterClick(position);
+            }
+        });
+
+    }
+
+    private void adapterClick(final int position) {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
-        mBuilder.setTitle(Constants.CHOOSE_ALERT_DIALOG_TITLE);
+        mBuilder.setTitle(R.string.dialog_title);
 
-        mBuilder.setSingleChoiceItems(itemDialog, -1, new DialogInterface.OnClickListener() {
+        mBuilder.setSingleChoiceItems(Constants.itemDialog, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
                 selectItem = which;
+                studentPosition=position;
 
                 dialog.dismiss();
 
                 switch (selectItem) {
-                    case VIEW:
-                        positionEditStudentData = pos;
-                        viewSendAnotherActivity();
+                    case Constants.VIEW:
+                        viewData();
                         break;
-                    case EDIT:
+                    case Constants.EDIT:
                         Bundle bundle = new Bundle();
-                        bundle.putString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT);
-                        bundle.putSerializable(Constants.STUDENT_DATA, mStudent.get(pos));
-                        positionEditStudentData = pos;
-                        mCommunicationFragmentInterface.communication(bundle);
+                        bundle.putString(Constants.ACTION_TYPE,Constants.ACTION_TYPE_EDIT);
+                        bundle.putSerializable(Constants.STUDENT_DATA, studentList.get(position));
+                        communicationFragmentInterface.communication(bundle);
                         break;
-                    case DELETE:
-                        deleteDialog(pos);
+                    case Constants.DELETE:
+                        generateDialog.generateAlertDialog(studentList.get(position).getRollNo(),studentList.get(position).getName(),Constants.ACTION_TYPE_DELETE);
                         break;
                 }
 
 
             }
         });
-        mBuilder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        mBuilder.setNeutralButton(R.string.dialog_btn_cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -138,188 +180,144 @@ public class StudentListFragment extends Fragment {
         mDialog.show();
     }
 
-    private void initValues() {
-        mTextView =  view.findViewById(R.id.mTextView);
-
-        mRecyclerView = view.findViewById(R.id.student_rv);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mButtonAddCuurent = view.findViewById(R.id.stu_add);
-        mAdapter = new StudentAdaptor(mStudent);
-        mRecyclerView.setAdapter(mAdapter);
-        if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO || mStudent == null) {
-            mTextView.setText(R.string.no_data);
-        }
-
-        mAdapter.setOnClickListener(new StudentAdaptor.OnItemClickListener() {
-            @Override
-            public void onItemCLick(int position) {
-                onClickOfAdapter(position);
-
-            }
-        });
-
-    }
-
-
-    private void deleteDialog(final int pos) {
-        AlertDialog.Builder builderForAlert = new AlertDialog.Builder(mContext);
-        builderForAlert.setTitle(R.string.delete_confirmation);
-        builderForAlert.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builderForAlert.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-
-                mStudentDatabaseHelper.deleteContact(mStudent.get(pos).getRollNo());
-                mStudent.remove(pos);
-                mAdapter.notifyDataSetChanged();
-
-                if (mStudent.size() == Constants.CHECK_ARRAYLIST_SIZE_ZERO && mTextView.getVisibility() == View.GONE || mStudent == null) {
-                    mTextView.setVisibility(View.VISIBLE);
-                }
-                Toast.makeText(mContext, Constants.DELETE_TOAST, Toast.LENGTH_LONG).show();
-            }
-        });
-        AlertDialog newDialog1 = builderForAlert.create();
-        newDialog1.show();
-    }
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = context;
-        if (context instanceof CommunicationFragmentInterface) {
-            mCommunicationFragmentInterface = (CommunicationFragmentInterface) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement Cummunication");
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCommunicationFragmentInterface = null;
-    }
-
-    public void update(Bundle bundleFrom2Fragment) {
-
-        switch (bundleFrom2Fragment.getString(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY)) {
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD:
-
-
-                int positionInsertStudent = 0;
-
-                StudentDetails sudStudent = (StudentDetails) bundleFrom2Fragment.getSerializable(Constants.STUDENT_DATA);
-                mStudent.add(positionInsertStudent, sudStudent);
-
-                if (mTextView.getVisibility() == View.VISIBLE) mTextView.setVisibility(View.GONE);
-                mAdapter.notifyItemInserted(positionInsertStudent);
-                Toast.makeText(mContext, Constants.ADD_TOAST, Toast.LENGTH_SHORT).show();
-
-                break;
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
-
-                String fName = bundleFrom2Fragment.getString(Constants.NAME);
-
-                StudentDetails suStudent = mStudent.get(positionEditStudentData);
-                suStudent.setName(fName);
-                mAdapter.notifyItemChanged(positionEditStudentData);
-                Toast.makeText(mContext, Constants.UPDATE_TOAST, Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         inflater.inflate(R.menu.togglebutton, menu);
         MenuItem mSpinner = menu.findItem(R.id.itemSpinner);
         mSpinner.setActionView(R.layout.spinner);
         Spinner sorting_spinner = menu.findItem(R.id.itemSpinner).getActionView().findViewById(R.id.spinnerId);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, choice);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sorting_spinner.setAdapter(spinnerAdapter);
-        sorting_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int mPosition = position;
-                switch (choice[position]) {
-                    case SORT_BY_ROLL_NUMBER:
-                        Toast.makeText(getActivity(), getString(R.string.sorted_by_roll), Toast.LENGTH_LONG).show();
-                        Collections.sort(mStudent, new SortByRoll());
-                        mAdapter.notifyDataSetChanged();
-                        break;
-
-                    case SORT_BY_NAME:
-                        Toast.makeText(getActivity(), getString(R.string.sorted_by_name), Toast.LENGTH_LONG).show();
-                        Collections.sort(mStudent, new SortByName());
-                        mAdapter.notifyDataSetChanged();
-                        break;
-                    default:
-                        return;
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        spinnerAdapter(sorting_spinner);
 
     }
 
-
-    /**
-     * This method provide the fuctionalities after Menuitem selected
-     *
-     * @param item
-     * @return
-     */
-
-   @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-
         switch (item.getItemId()){
             case R.id.mySwitch:
-                if(!toggleLayout) {
-                    toggleLayout =true;
+                if(!layoutSwitch) {
+                    layoutSwitch =true;
                     item.setIcon(R.drawable.ic_grid_on_black_24dp);
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(mContext,2));
-                    Toast.makeText(mContext,Constants.GRID_LAYOUT_RECYCLER_VIEW,Toast.LENGTH_LONG).show();
-                }else {
-                    toggleLayout =false;
+                    rv_student.setLayoutManager(new GridLayoutManager(mContext,Constants.GRIDLAYOUT_SPAN));
+                    Toast.makeText(mContext,getString(R.string.grid),Toast.LENGTH_LONG).show();
+                }
+                else {
+                    layoutSwitch =false;
                     item.setIcon(R.drawable.ic_grid_off_black_24dp);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                    Toast.makeText(mContext,Constants.LINEAR_LAYOUT_RECYCLER_VIEW,Toast.LENGTH_LONG).show();
+                    rv_student.setLayoutManager(new LinearLayoutManager(mContext));
+                    Toast.makeText(mContext,getString(R.string.linear),Toast.LENGTH_LONG).show();
                 }
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    void viewSendAnotherActivity() {
-        Intent intent = new Intent(mContext, StudentActivity.class);
-        intent.putExtra(Constants.STUDENT_DATA, mStudent.get(positionEditStudentData));
-        intent.putExtra(Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY, Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_VIEW);
+
+    private void spinnerAdapter(Spinner spinner){
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, Constants.choice);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int mPosition = position;
+                switch (Constants.choice[position]) {
+                    case Constants.ROLL_NO:
+                        Toast.makeText(getActivity(), getString(R.string.sort_roll), Toast.LENGTH_LONG).show();
+                        Collections.sort(studentList, new SortByRoll());
+                        studentAdapter.notifyDataSetChanged();
+                        break;
+
+                    case Constants.NAME:
+                        Toast.makeText(getActivity(), getString(R.string.sort_name), Toast.LENGTH_LONG).show();
+                        Collections.sort(studentList, new SortByName());
+                        studentAdapter.notifyDataSetChanged();
+                        break;
+
+                    default:
+                        break;
+
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    public void update(Bundle bundle) {
+        switch (bundle.getString(Constants.ACTION_TYPE)) {
+            case Constants.ACTION_TYPE_ADD:
+                int studentInsertPosition = 0;
+                StudentDetails sudStudent = (StudentDetails) bundle.getSerializable(Constants.STUDENT_DATA);
+                studentList.add(studentInsertPosition, sudStudent);
+                if (tv_no_data.getVisibility() == View.VISIBLE) tv_no_data.setVisibility(View.GONE);
+                studentAdapter.notifyItemInserted(studentInsertPosition);
+                Toast.makeText(mContext, Constants.ADD_TOAST, Toast.LENGTH_SHORT).show();
+                break;
+            case Constants.ACTION_TYPE_EDIT:
+                String sName = bundle.getString(Constants.NAME);
+                StudentDetails suStudent = studentList.get(studentPosition);
+                suStudent.setName(sName);
+                studentAdapter.notifyItemChanged(studentPosition);
+                Toast.makeText(mContext, Constants.UPDATE_TOAST, Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Constants.FILTER_KEY_DELETE);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mStudentBroadcastReciever,intentFilter);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mStudentBroadcastReciever);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void sendCallMessage(String str) {
+
+        Toast.makeText(mContext,str,Toast.LENGTH_LONG).show();
+        studentList.remove(studentPosition);
+        studentAdapter.notifyItemRemoved(studentPosition);
+        listCheclist(studentList);
+    }
+
+    @Override
+    public void sendBack(String str) {
+        if(str.equals(Constants.ACTION_TYPE_DELETE)){
+            Toast.makeText(mContext,str,Toast.LENGTH_LONG).show();
+            studentList.remove(studentPosition);
+            studentAdapter.notifyItemRemoved(studentPosition);
+            listCheclist(studentList);
+        }
+    }
+    private void viewData(){
+        Intent intent = new Intent(mContext, StudentViewActivity.class);
+        intent.putExtra(Constants.STUDENT_DATA, studentList.get(studentPosition));
+        intent.putExtra(Constants.ACTION_TYPE, Constants.ACTION_TYPE_VIEW);
         mContext.startActivity(intent);
+    }
+    private void listCheclist(ArrayList<StudentDetails> studentDetailsArrayList){
+        if(studentDetailsArrayList.size()==Constants.ARRAYLIST_SIZE_ZERO){
+            tv_no_data.setVisibility(View.VISIBLE);
+        }
+
     }
 }
 

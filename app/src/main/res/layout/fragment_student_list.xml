@@ -8,7 +8,7 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/student_rv">
+        android:id="@+id/rv_student">
 
     </android.support.v7.widget.RecyclerView>
     <TextView
@@ -17,14 +17,14 @@
         android:textSize="@dimen/_24sp"
         android:layout_centerInParent="true"
         android:textColor="@android:color/holo_red_dark"
-        android:id="@+id/mTextView"/>
+        android:id="@+id/tv_no_data"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/stu_add"
+        android:id="@+id/btn_add"
         android:layout_alignParentBottom="true"
-        android:text="Add student"
+        android:text="@string/add_student"
         android:background="@android:color/holo_blue_bright"
         />
 

@@ -1,35 +1,29 @@
 <resources>
-    <string name="app_name">StudentManagementSystem</string>
-    <string name="text">ADD STUDENT</string>
-    <string name="text_save_button">SAVE</string>
-    <string name="shivam_tv">shivam</string>
-    <string name="enter_name">Enter name</string>
-    <string name="enter_roll_number">Enter roll number</string>
-    <string name="blank_field">should not be left blank</string>
-    <string name="DETAIL_VIEW">View</string>
-    <string name="dialog_title_update">update by</string>
-    <string name="dialog_title_add">Add By</string>
-    <string name="delete_confirmation">Do you really want to delete this item..</string>
-    <string name="cancel">Cancel</string>
-    <string name="roll_no">roll no</string>
-    <string name="name">name</string>
-    <string name="toast_student_added">student added</string>
-    <string name="student_changed">changed</string>
-    <string name="no_data">NO STUDENT ADDED</string>
-    <string name="dialog_delete">delete</string>
-    <string name="switch_view">View</string>
-    <string name="invalid_name_message">Enter valid name</string>
-    <string name="invalid_rollNo_message">Enter valid roll number</string>
-    <string name="same_rollNo_message">Roll number should be different</string>
-    <string name="alert_title">Choose Action</string>
-    <string name="sorted_by_roll">Sorted by roll number</string>
-    <string name="sorted_by_name">Sorted by name</string>
+    <string name="app_name">Assignment5</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="valid_name">invalid name</string>
-    <string name="valid_rollNumber">invalid roll number</string>
-    <string name="same_roll_error">try different roll number</string>
+    <string name="enter_name">enter name</string>
+    <string name="enter_roll_number">enter_roll_number</string>
+    <string name="save">save</string>
+    <string name="text">Shivam</string>
+    <string name="no_data">NO STUDENT ADDED</string>
+    <string name="dialog_title">Choose Action</string>
+    <string name="grid">changed to grid</string>
+    <string name="linear">changed to linear</string>
+    <string name="delete">deleted</string>
+    <string name="dialog_delete">delete</string>
+    <string name="sort_roll">sorted by roll</string>
+    <string name="sort_name">sorted by name</string>
+    <string name="dilog_title_delete">Delete</string>
+    <string name="dialog_btn_cancel">Cancel</string>
+    <string name="invalid_name">Enter Valid Name</string>
+    <string name="invalid_roll_no">Enter Valid Roll Number</string>
+    <string name="same_rollNum_error">Enter Different Roll Number</string>
+    <string name="dialog_title_update">Update BY</string>
+    <string name="dilog_title_add">Add By</string>
+    <string name="delet_confirmation">Do you reall want to delete..?</string>
+    <string name="add_student">Add student</string>
 
 
 </resources>

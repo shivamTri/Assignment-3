@@ -3,17 +3,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp">
+    android:orientation="vertical"
+    android:padding="@dimen/_10dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/shivam_tv"
+        android:text="@string/text"
         android:textSize="24dp"
         android:background="@android:color/darker_gray"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="@dimen/_10dp"
         android:id="@+id/text"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_roll"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:padding="@dimen/_10dp"/>
 
 </LinearLayout>

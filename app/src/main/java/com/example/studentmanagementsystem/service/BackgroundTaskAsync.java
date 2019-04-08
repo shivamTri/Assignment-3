@@ -1,4 +1,4 @@
-package com.example.studentmanagementsystem.model;
+package com.example.studentmanagementsystem.service;
 
 import android.content.Context;
 import android.os.AsyncTask;
