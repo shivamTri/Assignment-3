@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.studentmanagementsystem.model.CommunicationFragmentInterface;
+import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 
@@ -19,8 +19,8 @@ public class StudentActivity extends AppCompatActivity implements CommunicationF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
-        bundle=getIntent().getExtras();
         FragmentManager fragmentManager=getSupportFragmentManager();
+        bundle=getIntent().getExtras();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         studentAddUpdateFragment=new StudentAddUpdateFragment();
         fragmentTransaction.add(R.id.frag_container,studentAddUpdateFragment);
@@ -30,7 +30,7 @@ public class StudentActivity extends AppCompatActivity implements CommunicationF
     @Override
     protected void onStart() {
         super.onStart();
-        studentAddUpdateFragment.update(bundle);
+        studentAddUpdateFragment.addStudent(bundle);
     }
 
     @Override

@@ -13,9 +13,11 @@ import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
  */
 public class BackgroundTaskAsync extends AsyncTask<String,Void,String> {
     private Context mContext;
+    private SendCallBack callBack;
 
-    public BackgroundTaskAsync(Context mContext) {
+    public BackgroundTaskAsync(Context mContext,SendCallBack callBack) {
         this.mContext = mContext;
+        this.callBack=callBack;
     }
 
     /**
@@ -45,20 +47,31 @@ public class BackgroundTaskAsync extends AsyncTask<String,Void,String> {
         String roll_no = params[1];
         String full_name = params[2];
         switch (method) {
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_ADD:
-                dataBaseHelper.addData(roll_no, full_name);
-                return Constants.ADD_TOAST;
-
-            case Constants.TYPE_ACTION_FROM_MAIN_ACTIVITY_EDIT:
+            case Constants.ACTION_TYPE_ADD:
+                dataBaseHelper.addData( full_name,roll_no);
+                break;
+            case Constants.ACTION_TYPE_EDIT:
                 dataBaseHelper.update_name(full_name,roll_no);
-                return Constants.UPDATE_TOAST;
+                break;
+            case Constants.ACTION_TYPE_DELETE:
+                dataBaseHelper.deleteContact(roll_no);
+                break;
 
             default:
+                break;
         }
-        return null;
+        return method;
 
     }
 
+    @Override
+    protected void onPostExecute(String s) {
+        callBack.sendBack(s);
+    }
+    public interface SendCallBack{
+        void sendBack(String s);
+
+    }
 
 
 
