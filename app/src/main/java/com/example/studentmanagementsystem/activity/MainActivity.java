@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.example.studentmanagementsystem.adapter.ViewPagerAdapter;
 import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterface;
 import com.example.studentmanagementsystem.R;
+import com.example.studentmanagementsystem.constants.Constants;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 import com.example.studentmanagementsystem.fragment.StudentListFragment;
 //import com.example.studentmanagementsystem.database.StudentDataBaseHelper;
@@ -32,10 +33,10 @@ public class MainActivity extends AppCompatActivity implements CommunicationFrag
      * fragments are being changed in this method as user clicks on add button
      */
     public void replaceFrag() {
-        if(viewPager.getCurrentItem()==0) {
-            viewPager.setCurrentItem(1);
+        if(viewPager.getCurrentItem()== Constants.zero) {
+            viewPager.setCurrentItem(Constants.one);
         }else
-            viewPager.setCurrentItem(0);
+            viewPager.setCurrentItem(Constants.zero);
     }
 
 
@@ -45,12 +46,12 @@ public class MainActivity extends AppCompatActivity implements CommunicationFrag
      */
     @Override
     public void communication(Bundle bundle) {
-        if(viewPager.getCurrentItem()==0) {
-            String tag = "android:switcher:" + R.id.viewpager_id + ":" + 1;
+        if(viewPager.getCurrentItem()==Constants.zero) {
+            String tag = "android:switcher:" + R.id.viewpager_id + ":" + Constants.one;
             StudentAddUpdateFragment studentAddUpdateFragment = (StudentAddUpdateFragment) getSupportFragmentManager().findFragmentByTag(tag);
             studentAddUpdateFragment.addStudent(bundle);
-        }else if(viewPager.getCurrentItem()==1){
-            String tag = "android:switcher:" + R.id.viewpager_id + ":" + 0;
+        }else if(viewPager.getCurrentItem()==Constants.one){
+            String tag = "android:switcher:" + R.id.viewpager_id + ":" + Constants.zero;
             StudentListFragment studentListFragment = (StudentListFragment) getSupportFragmentManager().findFragmentByTag(tag);
             studentListFragment.update(bundle);
         }
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationFrag
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(Constants.zero);
     }
 
 

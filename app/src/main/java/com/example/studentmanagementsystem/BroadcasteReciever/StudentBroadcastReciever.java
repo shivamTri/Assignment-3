@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import com.example.studentmanagementsystem.constants.Constants;
 
+/**
+ * this class is getting message and sending call back to the respected classes.
+ */
 public class StudentBroadcastReciever extends BroadcastReceiver {
 
     private SendBroadCastMessage sendBroadCastMessageUpdate;
@@ -21,6 +24,11 @@ public class StudentBroadcastReciever extends BroadcastReceiver {
         this.sendBroadCastMessageDelete = sendBroadCastMessageDelete;
     }
 
+    /**
+     * getting message if task is done.
+     * @param context
+     * @param intent
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -33,6 +41,9 @@ public class StudentBroadcastReciever extends BroadcastReceiver {
         }
     }
 
+    /**
+     * sending broadcastmessage to respected classes.
+     */
     public interface SendBroadCastMessage{
         void sendCallMessage(String str);
     }

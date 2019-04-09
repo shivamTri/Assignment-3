@@ -238,6 +238,7 @@ public class StudentAddUpdateFragment extends Fragment implements BackgroundTask
     public void sendBack(String s) {
         if(!s.equals(Constants.ACTION_TYPE_DELETE)) {
             Toast.makeText(mContext,s,Toast.LENGTH_LONG).show();
+            clearEditText(et_name,et_rollNo);
             communicationFragmentInterface.communication(bundle);
         }
     }
@@ -254,7 +255,7 @@ public class StudentAddUpdateFragment extends Fragment implements BackgroundTask
     }
 
     /**
-     * Broadcast reciever is being un registered .
+     * Broadcast reciever is un registered .
      */
     @Override
     public void onPause() {
@@ -264,7 +265,10 @@ public class StudentAddUpdateFragment extends Fragment implements BackgroundTask
 
     }
 
-
+    /**
+     * getting callback from broadcast reciever.
+     * @param str
+     */
     @Override
     public void sendCallMessage(String str) {
         Toast.makeText(mContext,str,Toast.LENGTH_LONG).show();
@@ -272,6 +276,12 @@ public class StudentAddUpdateFragment extends Fragment implements BackgroundTask
 
         communicationFragmentInterface.communication(bundle);
     }
+
+    /**
+     * for clearing the edit texts after the task is done in fragments.
+     * @param et_name
+     * @param et_roll_no
+     */
     private void clearEditText(EditText et_name,EditText et_roll_no){
         et_name.getText().clear();
         et_roll_no.getText().clear();

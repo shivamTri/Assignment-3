@@ -8,8 +8,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 import com.example.studentmanagementsystem.fragment.StudentListFragment;
 
-
-    public class ViewPagerAdapter extends FragmentPagerAdapter {
+/**
+ * this is adapter class for view pager.
+ */
+public class ViewPagerAdapter extends FragmentPagerAdapter {
 
         private StudentAddUpdateFragment studentAddUpdateFragment;
         private StudentListFragment studentListFragment;
@@ -35,13 +37,18 @@ import com.example.studentmanagementsystem.fragment.StudentListFragment;
             return null;
         }
 
-        @Override
+    /**
+     * @return count as how many tabs are there to
+     */
+    @Override
         public int getCount() {
             return 2;
         }
 
         @Nullable
-
+        /**
+         * setting tab name to respective tabs.
+         */
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {

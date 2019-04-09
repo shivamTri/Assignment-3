@@ -79,6 +79,13 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         studentList=studentDataBase.getData();
     }
 
+    /**
+     * view is created in this method after fragment is attached and created.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -98,7 +105,10 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
     }
 
 
-
+    /**
+     * this method is called first of all as fragment is attached to activity.
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -111,12 +121,18 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         }
     }
 
+    /**
+     * frament is detached before activity is destroyed.
+     */
     @Override
     public void onDetach() {
         super.onDetach();
         communicationFragmentInterface = null;
     }
 
+    /**
+     * all views are initalized in this method
+     */
     private void init() {
 
         tv_no_data = view.findViewById(R.id.tv_no_data);
@@ -139,6 +155,10 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
 
     }
 
+    /**
+     * this method is called when user clicks on any item and adapter calls it after click listener.
+     * @param position
+     */
     private void adapterClick(final int position) {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
         mBuilder.setTitle(R.string.dialog_title);
@@ -165,6 +185,9 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
                     case Constants.DELETE:
                         generateDialog.generateAlertDialog(studentList.get(position).getRollNo(),studentList.get(position).getName(),Constants.ACTION_TYPE_DELETE);
                         break;
+
+                        default:
+                        break;
                 }
 
 
@@ -180,7 +203,11 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         mDialog.show();
     }
 
-
+    /**
+     * called after menu is created  spinner is being created in this.
+     * @param menu
+     * @param inflater
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.togglebutton, menu);
@@ -191,6 +218,11 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
 
     }
 
+    /**
+     * clicking on grid item it changes icon as on grid and off grid.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -212,7 +244,10 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         return super.onOptionsItemSelected(item);
     }
 
-
+    /**
+     * this is spinner adapter for attaching the list to the spinner.
+     * @param spinner
+     */
     private void spinnerAdapter(Spinner spinner){
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, Constants.choice);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -246,6 +281,10 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         });
     }
 
+    /**
+     * student data is added  and edited after user selects the operation.
+     * @param bundle
+     */
     public void update(Bundle bundle) {
         switch (bundle.getString(Constants.ACTION_TYPE)) {
             case Constants.ACTION_TYPE_ADD:
@@ -268,6 +307,9 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         }
     }
 
+    /**
+     * broadcast reciever is registered here .
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -276,6 +318,9 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
 
     }
 
+    /**
+     * broadcast reciever is de registered here.
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -283,12 +328,11 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-    }
-
+    /**
+     * getting call back from broadcast reciever after task is done.
+     * @param str
+     */
     @Override
     public void sendCallMessage(String str) {
 
@@ -298,6 +342,10 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
         listCheclist(studentList);
     }
 
+    /**
+     * getting call back from async task after task is done.
+     * @param str
+     */
     @Override
     public void sendBack(String str) {
         if(str.equals(Constants.ACTION_TYPE_DELETE)){
@@ -307,12 +355,21 @@ public class StudentListFragment extends Fragment implements StudentBroadcastRec
             listCheclist(studentList);
         }
     }
+
+    /**
+     * this method is opening the student activity and passing the data to activity
+     */
     private void viewData(){
         Intent intent = new Intent(mContext, StudentViewActivity.class);
         intent.putExtra(Constants.STUDENT_DATA, studentList.get(studentPosition));
         intent.putExtra(Constants.ACTION_TYPE, Constants.ACTION_TYPE_VIEW);
         mContext.startActivity(intent);
     }
+
+    /**
+     * validating is arraylist is empty or not and giving the message on screen for the same.
+     * @param studentDetailsArrayList
+     */
     private void listCheclist(ArrayList<StudentDetails> studentDetailsArrayList){
         if(studentDetailsArrayList.size()==Constants.ARRAYLIST_SIZE_ZERO){
             tv_no_data.setVisibility(View.VISIBLE);

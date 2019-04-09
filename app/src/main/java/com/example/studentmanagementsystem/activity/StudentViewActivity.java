@@ -9,6 +9,9 @@ import com.example.studentmanagementsystem.Interface.CommunicationFragmentInterf
 import com.example.studentmanagementsystem.R;
 import com.example.studentmanagementsystem.fragment.StudentAddUpdateFragment;
 
+/**
+ * this activity has been used to show the data of student using fragment re usability.
+ */
 public class StudentViewActivity extends AppCompatActivity implements CommunicationFragmentInterface {
 
 
@@ -27,6 +30,9 @@ public class StudentViewActivity extends AppCompatActivity implements Communicat
         fragmentTransaction.commit();
     }
 
+    /**
+     * data is being passed to the studentAddUpdateFragment to set the data in the view.
+     */
     @Override
     protected void onStart() {
         super.onStart();

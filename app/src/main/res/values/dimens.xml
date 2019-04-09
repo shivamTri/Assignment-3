@@ -4,4 +4,5 @@
     <dimen name="_10dp">10dp</dimen>
     <dimen name="btn_mrgntop_50dp">50dp</dimen>
     <dimen name="et_mrgntop_20dp">20dp</dimen>
+    <dimen name="_20dp">20dp</dimen>
 </resources>

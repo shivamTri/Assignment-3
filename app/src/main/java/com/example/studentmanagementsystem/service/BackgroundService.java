@@ -15,6 +15,14 @@ public class BackgroundService extends Service {
         return null;
     }
 
+    /**
+     * in this overridden method student data is being updated ,deleted and added in database.
+     * @param intent getting from addupdate fragment
+     * @param flags
+     * @param startId
+     * @return
+     */
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         StudentDataBaseHelper studentDataBase=new StudentDataBaseHelper(this);

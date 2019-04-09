@@ -11,12 +11,19 @@ import com.example.studentmanagementsystem.service.BackgroundIntentService;
 import com.example.studentmanagementsystem.service.BackgroundService;
 import com.example.studentmanagementsystem.service.BackgroundTaskAsync;
 
+/**
+ * this class is for generating dialog box for database operations on delete,add etc.
+ */
 public class GenerateDialog {
         private Context mContext;
         private BackgroundTaskAsync.SendCallBack callBack;
 
-
-        public GenerateDialog(Context mContext, BackgroundTaskAsync.SendCallBack callBack) {
+    /**
+     * constructor having context and call back as parameter.
+     * @param mContext
+     * @param callBack
+     */
+    public GenerateDialog(Context mContext, BackgroundTaskAsync.SendCallBack callBack) {
             this.mContext = mContext;
             this.callBack=callBack;
         }

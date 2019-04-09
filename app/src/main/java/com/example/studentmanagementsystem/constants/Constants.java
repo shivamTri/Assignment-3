@@ -3,6 +3,9 @@ package com.example.studentmanagementsystem.constants;
 import android.content.Context;
 import android.widget.Toast;
 
+/**
+ * all constants in this project have been initialized in this class.
+ */
 public interface Constants  {
     String STUDENT_LIST = "student list";
     String ACTION_TYPE = "type";
@@ -30,13 +33,21 @@ public interface Constants  {
     String FILTER_ACTION_KEY = "key";
     String FILTER_KEY_DELETE = "delete";
     String ACTION_TYPE_DELETE = "delete data";
-     int Edit=0;
-     int Add=1;
-     String DATABASE_NAME="studentManagement.db";
-     int DATABASE_VERSION=1;
+    int Edit=0;
+    int Add=1;
+    String DATABASE_NAME="studentManagement.db";
+    int DATABASE_VERSION=1;
     String TABLE_NAME="student";
     String COL_NAME="Name";
-     String COL_ROLL="Roll_number";
+    String COL_ROLL="Roll_number";
+    String regx = "[a-zA-Z]+\\.?";
+    String regxRoll = "^[1-9][0-9]*$";
+    int zero=0;
+    int one=1;
+
+
+
+
 
 
 }

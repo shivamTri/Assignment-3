@@ -20,12 +20,10 @@
         android:id="@+id/tv_no_data"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+       style="@style/ButtonStyle"
         android:id="@+id/btn_add"
         android:layout_alignParentBottom="true"
         android:text="@string/add_student"
-        android:background="@android:color/holo_blue_bright"
         />
 
 </RelativeLayout>

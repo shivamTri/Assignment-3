@@ -4,7 +4,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="enter_name">enter name</string>
-    <string name="enter_roll_number">enter_roll_number</string>
+    <string name="enter_roll_number">enter roll number</string>
     <string name="save">save</string>
     <string name="text">Shivam</string>
     <string name="no_data">NO STUDENT ADDED</string>

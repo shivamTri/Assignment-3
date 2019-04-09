@@ -21,18 +21,33 @@ public class StudentDataBaseHelper extends SQLiteOpenHelper {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
     }
 
+    /**
+     * in this method table is created.
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(createTable);
 
     }
 
+    /**
+     * in this method table is dropped if already exist and being upgraded from old to new version.
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(" DROP TABLE IF EXISTS "+Constants.TABLE_NAME);
         onCreate(db);
     }
 
+    /**
+     * student data is added in by this method into database.
+     * @param student_name
+     * @param roll_no
+     */
     public void addData(String student_name,String roll_no){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
@@ -44,6 +59,11 @@ public class StudentDataBaseHelper extends SQLiteOpenHelper {
 
 
     }
+
+    /**
+     * getting the data of students into arraylist.
+     * @return ArrayList<>
+     */
 
     public ArrayList<StudentDetails> getData(){
         SQLiteDatabase db=this.getReadableDatabase();
@@ -62,12 +82,21 @@ public class StudentDataBaseHelper extends SQLiteOpenHelper {
         return arrayOfstore;
     }
 
+    /**
+     * perticular student is deleted by getting roll no a parameter.
+     * @param rollNo
+     */
     public void deleteContact(String rollNo) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(Constants.TABLE_NAME, Constants.COL_ROLL + " = ?", new String[] { String.valueOf(Integer.parseInt(rollNo)) });
         db.close();
     }
 
+    /**
+     * details of the student is updated in this method on the basis of their roll no.
+     * @param name
+     * @param rollNo
+     */
     public void update_name(String name,String rollNo){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
